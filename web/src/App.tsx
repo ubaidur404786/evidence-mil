@@ -21,6 +21,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
   const [uploading, setUploading] = useState(false);
   const [page, setPage] = useState<"review" | "how" | "compare">("review");
   const [mode, setMode] = useState<"flow" | "workstation">("flow");
+  const [focus, setFocus] = useState(false);
 
   useEffect(() => {
     if (!source) pickSource().then(setSource);
@@ -84,7 +85,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
 
       {page === "how" && <HowItWorks />}
       {page === "compare" && <Compare />}
-      <div className="layout" hidden={page !== "review"}>
+      <div className={`layout${focus ? " is-focus" : ""}`} hidden={page !== "review"}>
         <Worklist cases={cases} states={states} current={caseId} onOpen={open} />
         <main className="main">
           {error && <p className="banner bad">{error}</p>}
@@ -101,6 +102,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
             <div className="modebar" role="tablist" aria-label="view">
               <button role="tab" aria-selected={mode === "flow"} className={mode === "flow" ? "is-on" : ""} onClick={() => setMode("flow")}>Pipeline flow</button>
               <button role="tab" aria-selected={mode === "workstation"} className={mode === "workstation" ? "is-on" : ""} onClick={() => setMode("workstation")}>Review workstation</button>
+              <button className={focus ? "is-on" : ""} onClick={() => setFocus((f) => !f)} title="Hide the worklist">{focus ? "⇥ Show worklist" : "⇤ Focus"}</button>
             </div>
           )}
           {view && runId && mode === "flow" && (

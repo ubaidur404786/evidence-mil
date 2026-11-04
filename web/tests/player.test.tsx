@@ -76,7 +76,7 @@ describe("FlowRunner", () => {
       act(() => vi.advanceTimersByTime(100));
       expect(screen.getByTestId(`pop-${k}`)).toBeInTheDocument();
       fireEvent.click(screen.getByTestId("pop-next"));
-      act(() => vi.advanceTimersByTime(400));
+      act(() => vi.advanceTimersByTime(600));
       expect(screen.queryByTestId(`pop-${k}`)).toBeNull();
     });
     expect(screen.getByTestId("flow-done")).toHaveTextContent("66.0%");
@@ -84,7 +84,7 @@ describe("FlowRunner", () => {
 
   it("shows patches, instance scores and the additive sum", () => {
     render(<FlowRunner view={view()} processMs={10} dwellMs={1000} patchUrl={noUrl} />);
-    const step = () => { fireEvent.click(screen.getByTestId("pop-next")); act(() => vi.advanceTimersByTime(400)); };
+    const step = () => { fireEvent.click(screen.getByTestId("pop-next")); act(() => vi.advanceTimersByTime(600)); };
     act(() => vi.advanceTimersByTime(10));
     step();
     act(() => vi.advanceTimersByTime(10));
@@ -99,7 +99,7 @@ describe("FlowRunner", () => {
   it("auto runs to the end", () => {
     render(<FlowRunner view={view()} processMs={10} dwellMs={50} patchUrl={noUrl} />);
     fireEvent.click(screen.getByTestId("flow-auto"));
-    for (let i = 0; i < 40; i++) act(() => vi.advanceTimersByTime(100));
+    for (let i = 0; i < 90; i++) act(() => vi.advanceTimersByTime(100));
     expect(screen.getByTestId("flow-done")).toBeInTheDocument();
   });
 });

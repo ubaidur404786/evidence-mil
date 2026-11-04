@@ -8,7 +8,11 @@ these patches were absent?"), and sign off a report whose every number has been 
 
 > Decision support for demonstration, not a medical device.
 
-<!-- demo GIF: record from docs/DEMO_SCRIPT.md and place at docs/demo.gif -->
+![pipeline flow: embeddings stage](docs/screens/3c-encode.png)
+
+The dashboard plays the forward pass left to right: each stage computes, zooms out of its node, animates what it
+does with the real numbers (tiling, encoding, per-patch scores, the running sum of evidence, the heatmap, the
+verified report), then docks back into the pipeline, where **+** reopens it. More frames: `docs/screens/`.
 
 ## The problem
 A pathologist checking a lymph node for breast-cancer metastasis looks at a slide of about 100,000 × 200,000
