@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
 
 export default defineConfig({
+  base: process.env.VITE_BASE ?? "/",
   plugins: [react()],
   resolve: {
     alias: { "@contracts": fileURLToPath(new URL("../contracts/generated/ts", import.meta.url)) },

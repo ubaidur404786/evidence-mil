@@ -15,7 +15,6 @@ jobs:
         with: { version: "0.11.21" }
       - name: Install (CPU torch)
         run: uv sync --all-packages --all-extras
-        env: { UV_TORCH_BACKEND: cpu }
       - run: uv run ruff check ${{ matrix.module }}
       - run: uv run pytest ${{ matrix.module }} -q
 
