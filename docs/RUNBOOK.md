@@ -23,6 +23,17 @@ uv run python scripts/build_real_cases.py --cache data/cache_phikon --model resu
    Close Docker Desktop first on an 8 GB laptop (training was killed once for low memory while kind was running).
 3. Paste `results/cache_phikon_results.md` back; commit it (the table, not the weights).
 
+## GPU (RTX 3050, driver 592.82 / CUDA 13.1)
+The lock file keeps CPU torch (CI and Docker have no GPU). For local GPU work, install the CUDA wheel and use
+`--no-sync` so uv does not swap it back:
+```powershell
+uv pip install --index-url https://download.pytorch.org/whl/cu130 "torch==2.14.1+cu130"
+uv run --no-sync python -c "import torch; print(torch.cuda.is_available())"
+uv run --no-sync python scripts/train_real.py --config ml/configs/camelyon16_phikon_additive.yaml --seeds 0 1 2
+```
+Config `device: auto` picks cuda when available. A plain `uv run`/`uv sync` restores CPU torch.
+torch 2.15 CUDA wheels need CUDA 13.2+ (newer driver); 2.14.1+cu130 matches this driver.
+
 ## 2. Own embeddings on Kaggle (M2, several GPU sessions; resumable)
 Kaggle notebook, GPU T4, internet on. CAMELYON16 slides attached as a dataset (or downloaded from the
 official GigaScience/AWS open-data mirror). Each session processes one shard; re-running skips finished slides.

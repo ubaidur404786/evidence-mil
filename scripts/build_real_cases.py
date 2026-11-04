@@ -44,7 +44,8 @@ def main() -> None:
     for cid in test_ids:
         emb, _ = cache.by_id(cid)
         with torch.inference_mode():
-            probs[cid] = float(sigmoid(float(model.head(torch.from_numpy(emb))["logit"]), model.spec.temperature))
+            logit = float(model.head(torch.from_numpy(emb))["logit"])
+        probs[cid] = float(sigmoid(logit, model.spec.temperature))
     by_p = sorted(probs, key=probs.get)
     picks = {by_p[-1]: "Most confident tumour score", by_p[0]: "Most confident normal score",
              min(probs, key=lambda c: abs(probs[c] - 0.5)): "Least certain slide"}

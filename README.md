@@ -48,7 +48,19 @@ Tests: `uv run pytest contracts ml agent api` and `cd web && npm test && npx pla
 | **additive (ours)** | 1.000 | 1.000 | 0.000 | 1.00 |
 
 The toy task checks the machinery: exact additivity, localisation and calibration. It is not a claim about
-real images. **CAMELYON16 results**: pending; the pipeline and commands are in [docs/RUNBOOK.md](docs/RUNBOOK.md).
+real images.
+
+**CAMELYON16** (130 official test slides; frozen Phikon features from `owkin/camelyon16-features`;
+mean ± sd over 3 seeds; `results/cache_phikon_results.md`):
+
+| head | AUROC | AUPRC | ECE |
+|---|---|---|---|
+| mean (baseline) | 0.579 ± 0.010 | 0.541 ± 0.014 | 0.137 ± 0.021 |
+| attention MIL (baseline) | 0.920 ± 0.008 | 0.924 ± 0.006 | 0.069 ± 0.015 |
+| **additive (ours)** | 0.911 ± 0.012 | 0.924 ± 0.008 | 0.068 ± 0.018 |
+
+The additive head matches attention MIL within noise while every prediction decomposes exactly into
+per-patch contributions. Features are under the Owkin non-commercial licence and are not redistributed here.
 
 ## Engineering
 - Modular monolith: `ml/` (pure PyTorch library), `agent/` (LangGraph), `api/` (FastAPI, SSE), `web/`

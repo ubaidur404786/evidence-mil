@@ -53,3 +53,9 @@ so the abstain path is visible.
 ## ADR-011 — LLM adapter is OpenAI-compatible HTTP
 One `http` adapter covers local (Ollama, llama.cpp) and hosted endpoints; `template` is the default and the
 fallback after a verifier failure or LLM error. Hosted use is limited to open-data demo cases.
+
+## ADR-012 — Encoder for the CAMELYON16 pack: Phikon (precomputed), provisional
+Chosen because a licensed, precomputed feature set exists (owkin/camelyon16-features, non-commercial) and
+it validates the head without GPU extraction: additive 0.911 ± 0.012 AUROC vs attention MIL 0.920 ± 0.008.
+The DINOv2 vs pathology-encoder comparison (ADR-001 experiment) is pending own extraction on Kaggle.
+Additive head is kept: equal accuracy and calibration, exact explanations.

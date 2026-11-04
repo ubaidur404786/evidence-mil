@@ -61,11 +61,13 @@ def run_experiment(cfg: dict, workdir: Path) -> Result:
     sets, masks = _split_cache(cfg, Path(workdir))
     dim = sets["train"].cache.dim
     head = build_head(cfg["head"]["name"], dim, **_kwargs(cfg["head"]))
-    history = train_head(head, sets["train"], TrainConfig(**cfg.get("train", {})))
+    tcfg = TrainConfig(**cfg.get("train", {}))
+    history = train_head(head, sets["train"], tcfg)
 
-    val_logits, val_labels = predict_logits(head, sets["val"])
+    val_logits, val_labels = predict_logits(head, sets["val"], tcfg.device)
     temperature = fit_temperature(val_logits, val_labels)
-    test_logits, test_labels = predict_logits(head, sets["test"])
+    test_logits, test_labels = predict_logits(head, sets["test"], tcfg.device)
+    head.cpu()  # explanations, export and serving run on CPU
     probs = np.asarray(sigmoid(test_logits, temperature))
     result = {
         "auroc": metrics.auroc(test_labels, probs),

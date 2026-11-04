@@ -48,7 +48,7 @@ def main() -> None:
             v = np.array([m[k] for m in ms])
             cells.append(f"{v.mean():.3f} ± {v.std():.3f}")
         lines.append(f"| {head} | " + " | ".join(cells) + " |")
-    (ROOT / "results" / f"{name}_results.md").write_text("\n".join(lines) + "\n")
+    (ROOT / "results" / f"{name}_results.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     (ROOT / "results" / f"{name}_results.json").write_text(json.dumps(results, indent=1))
     print("\n".join(lines))
 

@@ -4,7 +4,7 @@ Input formats:
   --emb DIR    per-slide <id>.npz from extract_embeddings.py (embeddings, coords); needs --labels CSV
                with columns `slide_id,label` (1 = tumour). Slide ids starting with "test" form the test split.
   --owkin DIR  owkin/camelyon16-features parquet files (data/Phikon_{train,test}-*.parquet): one row per
-               slide with `features` [N<=1000, 3 + 768] and `label`. The first 3 columns are (zoom level, x, y)
+               slide with `features` [N<=1000, 3 + 768] and `label`. The first 3 columns are (level, x, y)
                tile indices; all-zero rows are padding and are dropped. No slide ids are given, so ids are
                train_000.. / test_000.. in file order.
 The non-test slides are split train/val, stratified by label (--val-frac).

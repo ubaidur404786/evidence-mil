@@ -14,7 +14,11 @@ class TrainConfig:
     lr: float = 1e-3
     weight_decay: float = 1e-4
     seed: int = 0
-    device: str = "cpu"
+    device: str = "cpu"  # "auto" = cuda when available
+
+    def __post_init__(self) -> None:
+        if self.device == "auto":
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 def bag_loss(logit: torch.Tensor, label: torch.Tensor) -> torch.Tensor:

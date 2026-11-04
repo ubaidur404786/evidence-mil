@@ -21,12 +21,12 @@ Each gate = tests green + boxes ticked. Update this file as you go.
   end-to-end `run_case` test emits all 6 events in order.
 
 ## M2 — Real data + encoder experiment
-- [ ] Start from a public precomputed feature set to validate the head quickly (check licence) — scripts ready (`build_cache.py --owkin`); **owner runs** (RUNBOOK §1)
+- [x] Start from a public precomputed feature set to validate the head quickly (check licence) — done: Phikon features, 399 slides, `results/cache_phikon_results.md`
 - [ ] Extract own embeddings on Kaggle/Colab (resumable shards; owner runs it) for 2–3 encoders — `scripts/extract_embeddings.py` ready; **owner runs** (RUNBOOK §2)
-- [ ] Train heads, compare vs baselines, external/centre-wise check where possible — `scripts/train_real.py` ready; toy comparison in `results/toy_results.md`
+- [x] Train heads, compare vs baselines, external/centre-wise check where possible — mean/abmil/additive × 3 seeds on official test split; centre-wise check not possible (no slide ids in feature set)
 - [ ] Faithfulness: deletion/insertion, random-weight sanity check; write `results/` tables — deletion curve + random-weight check implemented and tested on toy; real run pending
-- [ ] Export chosen head to ONNX; build 5–8 demo case bundles (thumbnail tiles + cached embeddings) — ONNX export + parity test done; 6 toy demo bundles built; real bundles pending
-- Gate ⏳ (needs owner's real-data run; ONNX parity ✅): results table committed, chosen encoder recorded in DECISIONS, ONNX parity test (torch vs onnx).
+- [x] Export chosen head to ONNX; build 5–8 demo case bundles (thumbnail tiles + cached embeddings) — ONNX parity test ✅; 6 toy bundles + 3 local CAMELYON16 bundles (`scripts/build_real_cases.py`)
+- Gate ✅ except own-embedding encoder comparison (Kaggle, pending): results table committed, chosen encoder recorded in DECISIONS, ONNX parity test (torch vs onnx).
 
 ## M3 — Agent (`agent/`)
 - [x] LangGraph: gate → tools → draft → verifier → human interrupt; Postgres/SQLite checkpointer
@@ -46,11 +46,11 @@ Each gate = tests green + boxes ticked. Update this file as you go.
 - Gate ✅ (7 vitest + Playwright smoke green): vitest component tests + one Playwright smoke test of the full replay.
 
 ## M6 — Docker
-- [x] Dockerfiles (multi-stage, non-root), `docker-compose.yml` (web, api, db, optional llm profile) — written; db = SQLite volume (ADR-008); build not run (Docker daemon off)
-- Gate ⏳ (Docker daemon off; smoke script passes against local uvicorn): `docker compose up` + smoke script passes.
+- [x] Dockerfiles (multi-stage, non-root), `docker-compose.yml` (web, api, SQLite volume per ADR-008, optional llm profile)
+- Gate ✅ (compose healthy, smoke passes via web /api proxy): `docker compose up` + smoke script passes.
 
 ## M7 — Kubernetes + CI
-- [x] kustomize base + `local` (kind) and `cloud` overlays; probes, resources, config/secret split — renders cleanly (`kubectl kustomize`); kind apply pending (kind not installed)
+- [x] kustomize base + `local` (kind) and `cloud` overlays; probes, resources, config/secret split — renders cleanly (`kubectl kustomize`); kind installed but control plane fails to start with Docker's 4 GB limit
 - [x] GitHub Actions: lint, tests per module, image build, manifest validation — `.github/workflows/ci.yml`; not run yet (no push)
 - Gate ⏳ (needs push + kind): CI green; manifests apply cleanly on kind and the app answers.
 
