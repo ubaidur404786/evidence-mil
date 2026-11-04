@@ -51,11 +51,11 @@ Each gate = tests green + boxes ticked. Update this file as you go.
 
 ## M7 — Kubernetes + CI
 - [x] kustomize base + `local` (kind) and `cloud` overlays; probes, resources, config/secret split — renders cleanly (`kubectl kustomize`); kind installed but control plane fails to start with Docker's 4 GB limit
-- [x] GitHub Actions: lint, tests per module, image build, manifest validation — `.github/workflows/ci.yml`; not run yet (no push)
-- Gate ⏳ (needs push + kind): CI green; manifests apply cleanly on kind and the app answers.
+- [x] GitHub Actions: lint, tests per module, image build, manifest validation — `.github/workflows/ci.yml` green on GitHub (lint, tests ×4, web + Playwright, kubeconform, image build)
+- Gate ✅ CI green; ⏳ kind apply (Docker 4 GB limit on the dev laptop): CI green; manifests apply cleanly on kind and the app answers.
 
 ## M8 — Cloud + launch
-- [ ] Deploy to a free container host (check current terms); public demo URL — **owner** (RUNBOOK §6)
+- [x] Deploy to a free container host (check current terms); public demo URL — GitHub Pages replay demo live; hosted live API pending a container-host account
 - [x] README (problem, diagram, GIF, results, quickstart, limits, Acknowledgements incl. Claude assistance) — real-data results + GIF pending
 - [ ] Record demo video from `docs/DEMO_SCRIPT.md`; LinkedIn post draft — LinkedIn draft in `docs/LINKEDIN_POST.md`; video is the owner's
 - Gate ⏳: fresh-clone quickstart works; links checked.

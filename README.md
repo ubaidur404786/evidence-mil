@@ -3,6 +3,8 @@
 **See why the model decided.** A large image is a bag of small patches. EvidenceMIL finds the patches that drove
 the prediction, replays every step in a dashboard, and writes a checked report that a person approves.
 
+**Live demo:** https://ubaidur404786.github.io/evidence-mil/ (replay of recorded runs, no backend)
+
 > Decision-support demo, not a medical device.
 
 <!-- demo GIF: record from docs/DEMO_SCRIPT.md and place at docs/demo.gif -->
