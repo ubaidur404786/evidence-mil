@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from evidence_agent import ReviewAgent
 from evidence_api.main import Settings, create_app
+from evidence_api.packs import Pack
 from evidencemil.cli import make_toy_bundles
 from evidencemil.experiment import run_experiment
 from evidencemil.pipeline import STEPS, save_model
@@ -22,7 +23,9 @@ def settings(tmp_path_factory) -> Settings:
     root = tmp_path_factory.mktemp("api")
     save_model(run_experiment(CFG, root / "work").model, root / "model")
     make_toy_bundles(root / "model", root / "cases", n=4)
-    return Settings(root / "cases", root / "model", root / "db.sqlite")
+    pack = Pack("toy", root / "cases", root / "model", live_encoder="fake",
+                encoder_kwargs={"dim": 32}, patch_px=16, min_tissue=0)
+    return Settings([pack], root / "db.sqlite")
 
 
 @pytest.fixture()
@@ -88,17 +91,12 @@ def test_replay_mode(settings, tmp_path):
     live = TestClient(create_app(settings, ReviewAgent()))
     run_id = live.post("/runs", json={"case_id": "toy-02"}).json()["run_id"]
     (tmp_path / "toy-02.json").write_text(json.dumps(live.get(f"/runs/{run_id}/steps").json()))
-    replay_settings = Settings(settings.cases_dir, settings.model_dir, tmp_path / "r.sqlite", tmp_path)
+    replay_settings = Settings(settings.packs, tmp_path / "r.sqlite", tmp_path)
     client = TestClient(create_app(replay_settings, ReviewAgent()))
     rid = client.post("/runs", json={"case_id": "toy-02"}).json()["run_id"]
     steps = client.get(f"/runs/{rid}/steps").json()
     assert [s["step"] for s in steps] == STEPS
     assert client.get(f"/runs/{rid}/report").status_code == 409
-
-
-def _props(schema: dict, name: str, root: dict) -> set[str]:
-    node = schema["components"]["schemas"][name] if "components" in schema else root
-    return set(node["properties"])
 
 
 def test_openapi_matches_contracts(client):
@@ -108,3 +106,48 @@ def test_openapi_matches_contracts(client):
         contract = json.loads((CONTRACTS / f"{name}.json").read_text())
         assert set(comps[name]["properties"]) == set(contract["properties"]), name
         assert set(comps[name]["required"]) == set(contract["required"]), name
+
+
+def _png(width: int, height: int) -> bytes:
+    import io
+
+    import numpy as np
+    from PIL import Image
+
+    rng = np.random.default_rng(0)
+    img = (0.3 + 0.15 * rng.standard_normal((height, width, 3))).clip(0, 1)
+    buf = io.BytesIO()
+    Image.fromarray((img * 255).astype("uint8")).save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def test_upload_then_run_encodes_live(client):
+    resp = client.post("/uploads", files={"file": ("my slide.png", _png(128, 96), "image/png")},
+                       data={"pack": "toy"})
+    assert resp.status_code == 201, resp.text
+    case = resp.json()
+    assert case["uploaded"] and case["n_patches"] == 48 and case["title"] == "my slide.png"
+    run_id = client.post("/runs", json={"case_id": case["case_id"]}).json()["run_id"]
+    steps = client.get(f"/runs/{run_id}/steps").json()
+    assert [s["step"] for s in steps] == STEPS and steps[2]["cached"] is False
+    assert steps[4]["payload"]["patch_images"]  # gallery images for the top patches
+    img = client.get(f"/cases/{case['case_id']}/patches/0")
+    assert img.status_code == 200 and img.headers["content-type"] in ("image/jpeg", "image/png")
+    assert case["case_id"] in [c["case_id"] for c in client.get("/cases").json()]
+
+
+def test_upload_rejects_bad_input(client):
+    bad = client.post("/uploads", files={"file": ("x.png", b"not an image", "image/png")}, data={"pack": "toy"})
+    assert bad.status_code == 422
+    tiny = client.post("/uploads", files={"file": ("t.png", _png(8, 8), "image/png")}, data={"pack": "toy"})
+    assert tiny.status_code == 422
+    assert client.post("/uploads", files={"file": ("t.png", _png(64, 64), "image/png")},
+                       data={"pack": "nope"}).status_code == 400
+
+
+def test_worklist_and_packs(client):
+    run_id = client.post("/runs", json={"case_id": "toy-02"}).json()["run_id"]
+    items = {i["case_id"]: i for i in client.get("/worklist").json()}
+    assert items["toy-02"]["run_id"] == run_id and 0 <= items["toy-02"]["probability"] <= 1
+    assert client.get("/packs").json()[0] == {"name": "toy", "title": "toy", "upload": True,
+                                              "patch_px": 16, "tile_um": None}

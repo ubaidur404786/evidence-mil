@@ -2,7 +2,8 @@
 
   1. train the additive head on the toy task      -> data/model/
   2. write demo case bundles (cached embeddings)  -> data/demo_cases/
-  3. record full runs (incl. template report)     -> web/public/replay/ (offline-safe replay)
+  3. write data/packs.json (toy + CAMELYON16 if its cases exist) and record every case
+     (incl. template report)                       -> web/public/replay/ (offline-safe replay)
   4. write results/toy_results.md (mean / abmil / additive on the same toy splits)
 
 Run from repo root: uv run python scripts/build_demo.py
@@ -17,10 +18,29 @@ import yaml
 from evidence_agent import ReviewAgent
 from evidencemil.cli import make_toy_bundles
 from evidencemil.experiment import run_experiment
-from evidencemil.pipeline import load_bundle, run_case, save_model
+from evidencemil.pipeline import load_bundle, load_model, run_case, save_model
 from evidencemil.pipeline.bundle import list_bundles
 
 ROOT = Path(__file__).parents[1]
+
+
+def record_replays(packs: list[dict], out: Path) -> None:
+    """Run every case of every pack once (template report) and save the events for replay mode."""
+    out.mkdir(parents=True, exist_ok=True)
+    agent = ReviewAgent()
+    index = []
+    for pack in packs:
+        model = load_model(ROOT / pack["model_dir"])
+        cases_dir = ROOT / pack["cases_dir"]
+        for meta in list_bundles(cases_dir):
+            cid = meta["case_id"]
+            events = [e.model_dump(mode="json") for e in run_case(
+                load_bundle(cases_dir, cid), model, report_fn=lambda ev, cid=cid: agent.start(ev, cid))]
+            (out / f"{cid}.json").write_text(json.dumps(events))
+            index.append({"pack": pack["name"], "domain": pack["title"],
+                          **{k: meta.get(k) for k in ("case_id", "title", "label", "n_patches", "source",
+                                                      "has_annotation")}})
+    (out / "index.json").write_text(json.dumps(index, indent=1))
 
 
 def main() -> None:
@@ -33,21 +53,17 @@ def main() -> None:
             rows.append((head, res.metrics))
             if head == "additive":
                 save_model(res.model, ROOT / "data/model")
-                model = res.model
     cases_dir = ROOT / "data/demo_cases"
     make_toy_bundles(ROOT / "data/model", cases_dir, n=6)
 
-    replay = ROOT / "web/public/replay"
-    replay.mkdir(parents=True, exist_ok=True)
-    agent = ReviewAgent()
-    index = []
-    for meta in list_bundles(cases_dir):
-        cid = meta["case_id"]
-        events = [e.model_dump(mode="json") for e in run_case(
-            load_bundle(cases_dir, cid), model, report_fn=lambda ev, cid=cid: agent.start(ev, cid))]
-        (replay / f"{cid}.json").write_text(json.dumps(events))
-        index.append({k: meta.get(k) for k in ("case_id", "title", "domain", "label")})
-    (replay / "index.json").write_text(json.dumps(index, indent=1))
+    packs = [{"name": "toy", "title": "Synthetic toy", "cases_dir": "data/demo_cases", "model_dir": "data/model",
+              "live_encoder": "fake", "encoder_kwargs": {"dim": 32}, "patch_px": 16, "min_tissue": 0}]
+    if (ROOT / "data/demo_cases_c16").exists() and (ROOT / "results/raw/cache_phikon_additive").exists():
+        packs.append({"name": "c16", "title": "Lymph node metastasis (CAMELYON16)",
+                      "cases_dir": "data/demo_cases_c16", "model_dir": "results/raw/cache_phikon_additive",
+                      "live_encoder": "phikon", "patch_px": 224, "min_tissue": 0.5, "tile_um": 112})
+    (ROOT / "data/packs.json").write_text(json.dumps(packs, indent=1))
+    record_replays(packs, ROOT / "web/public/replay")
 
     lines = ["# Toy task results (synthetic, fake encoder)", "",
              "Same splits (160 train / 60 val / 100 test bags), 8×8 patches, 1–4 positive patches.",

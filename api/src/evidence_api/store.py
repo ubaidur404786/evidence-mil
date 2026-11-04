@@ -32,6 +32,14 @@ class Store:
                                      (run_id,)).fetchone()
         return None if row is None else {"run_id": run_id, "case_id": row[0], "events": json.loads(row[1])}
 
+    def latest_runs(self) -> list[dict]:
+        """Most recent run per case."""
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT r.run_id, r.case_id, r.events FROM runs r JOIN (SELECT case_id, MAX(created) AS c "
+                "FROM runs GROUP BY case_id) m ON r.case_id = m.case_id AND r.created = m.c").fetchall()
+        return [{"run_id": a, "case_id": b, "events": json.loads(e)} for a, b, e in rows]
+
     def audit(self, run_id: str | None, action: str, detail: dict) -> None:
         with self._lock, self._conn:
             self._conn.execute("INSERT INTO audit (ts, run_id, action, detail) VALUES (?, ?, ?, ?)",

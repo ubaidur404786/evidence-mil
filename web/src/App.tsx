@@ -1,73 +1,107 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { pickSource, type Source } from "./api";
-import { StepPlayer } from "./components/StepPlayer";
-import type { CaseSummary, StepEvent } from "./types";
+import { CaseWorkspace } from "./components/CaseWorkspace";
+import { UploadDialog } from "./components/UploadDialog";
+import { Worklist, type CaseState } from "./components/Worklist";
+import { deriveView } from "./lib/derive";
+import type { CaseSummary, CaseView, PackInfo, StepEvent } from "./types";
 
-export function App({ source: given }: { source?: Source }) {
+export function App({ source: given, intervalMs }: { source?: Source; intervalMs?: number }) {
   const [source, setSource] = useState<Source | undefined>(given);
   const [cases, setCases] = useState<CaseSummary[]>([]);
+  const [packs, setPacks] = useState<PackInfo[]>([]);
+  const [states, setStates] = useState<Record<string, CaseState>>({});
   const [caseId, setCaseId] = useState<string>();
   const [runId, setRunId] = useState<string>();
-  const [events, setEvents] = useState<StepEvent[]>([]);
+  const [view, setView] = useState<CaseView | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!source) pickSource().then(setSource);
   }, [source]);
 
   useEffect(() => {
-    source?.listCases().then(setCases).catch((e) => setError(String(e)));
+    if (!source) return;
+    source.listCases().then(setCases).catch((e) => setError(String(e)));
+    source.listPacks().then(setPacks).catch(() => setPacks([]));
   }, [source]);
 
-  async function start(id: string) {
+  const open = useCallback(async (id: string) => {
     if (!source) return;
     setCaseId(id);
-    setEvents([]);
+    setView(null);
     setError(undefined);
+    setLoading(true);
     const collected: StepEvent[] = [];
     try {
       const rid = await source.run(id, (e) => collected.push(e));
+      const v = deriveView(collected);
+      if (!v) throw new Error("incomplete run: not all six steps arrived");
       setRunId(rid);
-      setEvents(collected);
+      setView(v);
+      setStates((s) => ({ ...s, [id]: { probability: v.aggregate.probability, abstain: v.aggregate.abstain, status: v.report?.status } }));
     } catch (e) {
-      setError(String(e));
+      setError(String((e as Error).message ?? e));
+    } finally {
+      setLoading(false);
     }
+  }, [source]);
+
+  function uploaded(c: CaseSummary) {
+    setUploading(false);
+    setCases((cs) => [c, ...cs]);
+    open(c.case_id);
   }
+
+  const canUpload = Boolean(source?.live && source.upload && packs.some((p) => p.upload));
 
   return (
     <div className="app">
-      <header>
-        <h1>EvidenceMIL</h1>
-        <p className="tagline">See why the model decided: every patch behind the prediction, step by step.</p>
-        {source && <span className="badge">{source.live ? "live API" : "replay mode (recorded runs)"}</span>}
+      <header className="topbar">
+        <div className="brand">
+          <span className="brand__mark" aria-hidden>◧</span>
+          <div>
+            <h1>EvidenceMIL</h1>
+            <p>Explainable image review · see which patches decided the prediction</p>
+          </div>
+        </div>
+        <div className="topbar__right">
+          {source && <span className={`chip ${source.live ? "chip--live" : ""}`}>{source.live ? "Live API" : "Replay · recorded runs"}</span>}
+          {canUpload && <button onClick={() => setUploading(true)} data-testid="upload-open">Upload image</button>}
+        </div>
       </header>
-      <main>
-        <aside className="cases">
-          <h2>Cases</h2>
-          <ul>
-            {cases.map((c) => (
-              <li key={c.case_id}>
-                <button className={c.case_id === caseId ? "is-current" : ""} onClick={() => start(c.case_id)}>
-                  <strong>{c.case_id}</strong>
-                  <span>{c.title}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </aside>
-        <section className="main">
-          {error && <p className="bad">{error}</p>}
-          {!caseId && <p className="hint">Choose a case to replay the pipeline.</p>}
-          {events.length > 0 && (
-            <StepPlayer
+
+      <div className="layout">
+        <Worklist cases={cases} states={states} current={caseId} onOpen={open} />
+        <main className="main">
+          {error && <p className="banner bad">{error}</p>}
+          {!caseId && !error && (
+            <div className="empty">
+              <h2>Select a case from the worklist</h2>
+              <p className="muted">The pipeline replays step by step: tiling, encoding, the additive model's score, the exact
+                patch contributions behind it, and a verified report for sign-off.</p>
+              {!source?.live && <p className="muted small">Public demo: recorded runs. Run the API locally for live analysis and uploads.</p>}
+            </div>
+          )}
+          {loading && <p className="muted pad" data-testid="loading">Running the pipeline…</p>}
+          {view && runId && (
+            <CaseWorkspace
               key={runId}
-              events={events}
-              onDecide={source?.live && runId ? (a, s) => source.decide(runId, a, s) : undefined}
+              view={view}
+              intervalMs={intervalMs}
+              patchUrl={(pid) => source!.patchUrl(view.caseId, pid)}
+              onDecide={source?.live ? (a, s) => source.decide(runId, a, s) : undefined}
+              onStatus={(status) => setStates((s) => ({ ...s, [view.caseId]: { ...s[view.caseId], status } }))}
             />
           )}
-        </section>
-      </main>
-      <footer>Decision-support demo, not a medical device. Demo cases use cached patch embeddings.</footer>
+        </main>
+      </div>
+      <footer className="footer">Decision support for demonstration, not a medical device. Cached cases are labelled as such.</footer>
+      {uploading && source?.upload && (
+        <UploadDialog packs={packs} onUpload={source.upload} onDone={uploaded} onClose={() => setUploading(false)} />
+      )}
     </div>
   );
 }

@@ -17,7 +17,7 @@ evidence-agent = { workspace = true }
 evidence-api = { workspace = true }
 
 [tool.ruff]
-line-length = 110
+line-length = 120
 target-version = "py311"
 extend-exclude = ["contracts/src/evidence_contracts/models.py"]
 
@@ -29,3 +29,6 @@ addopts = "--import-mode=importlib"
 
 [tool.ruff.lint.isort]
 known-first-party = ["evidencemil", "evidence_contracts", "evidence_agent", "evidence_api"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.File", "fastapi.Form"]

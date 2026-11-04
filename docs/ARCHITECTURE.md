@@ -11,15 +11,25 @@ An agent then turns the evidence into a checked report that a human approves.
 ## 2. Pipeline (the 6 columns in the diagram)
 | # | Stage | What happens | Event payload (contracts) |
 |---|---|---|---|
-| 1 | Input | choose a sample image / upload | case id, thumbnail |
-| 2 | Tile | cut into a grid of patches, drop background | grid rows/cols, kept patch coords |
-| 3 | Encode | frozen encoder → vector per patch (cached in demo) | 2-D projection of vectors, `cached` flag |
-| 4 | Aggregate | additive MIL head → logit, probability, abstain flag | per-patch attention, logit, calibrated prob |
-| 5 | Explain | contributions (sum = logit), top-k patches, what-if deletion curve | contributions, top-k, curve |
-| 6 | Report | LangGraph: gate → tools → draft → verify → human approval | report sections, citations, verifier result |
+| 1 | Input | choose a case / upload an image | `thumbnail` (JPEG data URL), `overlay` (annotation RGBA PNG or null), `title`, `domain`, `source`, `note`, `reference_label`, `image_size` |
+| 2 | Tile | cut into a grid of patches, drop background | `rows`, `cols`, `coords` [[row, col]], `n_patches`, `tile_um`, `reference` (per-patch annotated-tumour fraction or null) |
+| 3 | Encode | frozen encoder → vector per patch (cached for demo slides, live for uploads) | `encoder`, `dim`, `projection` (2-D PCA), `cached` flag |
+| 4 | Aggregate | additive MIL head → logit, calibrated probability, abstain flag | `logit`, `bias`, `probability`, `temperature`, `abstain`, `abstain_band`, `attention` |
+| 5 | Explain | contributions (sum = logit), top-k, deletion curve, agreement with annotation | `evidence` (contract `Evidence`), `patch_images` (top 8 as data URLs), `localisation` (precision@k, chance, AUROC or null) |
+| 6 | Report | LangGraph: gate → tools → draft → verify → human approval | `report` (contract `Report`) |
 
 The API streams one `StepEvent` per stage (SSE). The dashboard animates each event as it arrives,
 or replays a recorded event file (offline-safe demo mode).
+
+**Dashboard** (`web/`): worklist (filter by review status) → case workspace: slide viewer (zoom/pan,
+layers: tiles / attention / contribution / pathologist outline, click a tile to inspect it), pipeline bar
+(replays the six stages), side panel (score + abstain band, contribution bars summing to the logit,
+top-patch gallery, what-if deletion curve, agreement with the pathologist, report sign-off). Uploads (live
+mode) are tiled and encoded on the server and appear in the worklist.
+
+**Packs** (`api/packs.py`): a pack = trained head + its cases + optional live encoder. `toy` (fake encoder)
+and `c16` (Phikon, CAMELYON16). Configured with `EVIDENCE_PACKS` (written to `data/packs.json` by
+`scripts/build_demo.py`).
 
 ## 3. Layers (the rows in the diagram) = folders
 | Layer | Folder | Depends on | Notes |

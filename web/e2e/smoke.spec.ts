@@ -9,6 +9,9 @@ test("replays the full pipeline for a demo case", async ({ page }) => {
     await expect(page.getByTestId(`step-${step}`)).toBeVisible({ timeout: 10_000 });
   }
   await expect(page.getByTestId("verifier")).toContainText("checked");
-  await page.getByText("Explain").click();
+  await page.getByRole("button", { name: /5\s*Explain/ }).click();
+  await page.getByRole("tab", { name: "Evidence" }).click();
   await expect(page.getByTestId("logit-total")).toBeVisible();
+  await expect(page.getByTestId("patch-gallery")).toBeVisible();
+  await expect(page.getByTestId("slide-viewer")).toBeVisible();
 });

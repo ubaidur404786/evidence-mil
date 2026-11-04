@@ -1,38 +1,62 @@
 [
  {
+  "pack": "toy",
+  "domain": "Synthetic toy",
   "case_id": "toy-01",
   "title": "Pattern present",
-  "domain": "toy",
-  "label": 1
+  "label": 1,
+  "n_patches": 64,
+  "source": null,
+  "has_annotation": null
  },
  {
+  "pack": "toy",
+  "domain": "Synthetic toy",
   "case_id": "toy-02",
   "title": "Noise only",
-  "domain": "toy",
-  "label": 0
+  "label": 0,
+  "n_patches": 64,
+  "source": null,
+  "has_annotation": null
  },
  {
+  "pack": "toy",
+  "domain": "Synthetic toy",
   "case_id": "toy-03",
   "title": "Pattern present",
-  "domain": "toy",
-  "label": 1
+  "label": 1,
+  "n_patches": 64,
+  "source": null,
+  "has_annotation": null
  },
  {
+  "pack": "toy",
+  "domain": "Synthetic toy",
   "case_id": "toy-04",
   "title": "Noise only",
-  "domain": "toy",
-  "label": 0
+  "label": 0,
+  "n_patches": 64,
+  "source": null,
+  "has_annotation": null
  },
  {
+  "pack": "toy",
+  "domain": "Synthetic toy",
   "case_id": "toy-05",
   "title": "Pattern present",
-  "domain": "toy",
-  "label": 1
+  "label": 1,
+  "n_patches": 64,
+  "source": null,
+  "has_annotation": null
  },
  {
+  "pack": "toy",
+  "domain": "Synthetic toy",
   "case_id": "toy-06",
   "title": "Ambiguous: one faint pattern",
-  "domain": "toy",
-  "label": 1
+  "label": 1,
+  "n_patches": 64,
+  "source": null,
+  "has_annotation": null
  }
 ]

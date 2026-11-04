@@ -59,3 +59,19 @@ Chosen because a licensed, precomputed feature set exists (owkin/camelyon16-feat
 it validates the head without GPU extraction: additive 0.911 ± 0.012 AUROC vs attention MIL 0.920 ± 0.008.
 The DINOv2 vs pathology-encoder comparison (ADR-001 experiment) is pending own extraction on Kaggle.
 Additive head is kept: equal accuracy and calibration, exact explanations.
+
+## ADR-013 — Review workstation UI
+The dashboard is organised like a clinical review tool: worklist with review status, a slide viewer with
+switchable evidence layers, and a side panel that keeps the score, its exact decomposition, the evidence
+patches, the what-if test and the sign-off together. The six-step replay stays as the pipeline bar.
+Canvas overlay (not DOM cells) so slides with hundreds of grid columns stay fast.
+
+## ADR-014 — Real slides: tile placement is checked, not assumed
+Cached Phikon features carry DeepZoom tile indices. We place them on the CC0 slide images and verify by
+re-encoding sampled tiles with Phikon and comparing to the cached vectors. Agreement with pathologist
+annotations (precision@k vs chance, ranking AUROC) is reported per slide in `results/c16_localisation.md`.
+
+## ADR-015 — Uploads: tiles kept raw, encoded on run
+Uploads (PNG/JPEG/TIFF ≤ 64 MB, ≤ 8192 px/side, ≤ 1500 tissue tiles) are tiled at the pack's patch size and
+stored as raw patches, so the Encode step runs live and is timed like the rest. Whole-slide pyramids use the
+offline extraction script. Processing stays on the server; nothing is sent to third parties.

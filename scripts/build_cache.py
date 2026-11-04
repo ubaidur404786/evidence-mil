@@ -43,7 +43,8 @@ def stream_owkin(directory: Path) -> Iterator[Case]:
                     arr = np.asarray(feats, dtype=np.float32)
                     arr = arr[np.abs(arr[:, 3:]).sum(axis=1) > 0]  # drop padding
                     coords = arr[:, [2, 1]].astype(np.int32)  # (row, col) = (y, x)
-                    yield f"{split}_{i:03d}", int(label), arr[:, 3:].astype(np.float16), coords
+                    # test rows are in official order test_001..test_130 (verified against reference.csv)
+                    yield f"{split}_{i + (split == 'test'):03d}", int(label), arr[:, 3:].astype(np.float16), coords
                     i += 1
 
 

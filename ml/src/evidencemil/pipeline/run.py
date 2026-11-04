@@ -1,6 +1,7 @@
 """run_case(): the six pipeline stages as a generator of StepEvents (contracts).
 
 The report stage is injected (`report_fn`) because `ml` must not import `agent`.
+Stage payloads (free-form `payload` in the contract) are documented in docs/ARCHITECTURE.md §2.
 """
 
 import time
@@ -10,13 +11,17 @@ import numpy as np
 import torch
 
 from evidence_contracts import Evidence, StepEvent
+from evidencemil import metrics
+from evidencemil.encoders.base import Encoder
 from evidencemil.explain import deletion_curve, explain_bag, top_k
-from evidencemil.pipeline.bundle import CaseBundle
+from evidencemil.pipeline.bundle import CaseBundle, patch_image
 from evidencemil.pipeline.model import CaseModel
-from evidencemil.pipeline.png import png_data_url
+from evidencemil.pipeline.png import bytes_data_url, image_data_url, png_data_url
 
 STEPS = ["input", "tile", "encode", "aggregate", "explain", "report"]
 ReportFn = Callable[[Evidence], dict]
+GALLERY = 8  # top patches shipped with an image in the explain event
+REFERENCE_POSITIVE = 0.5  # a patch counts as annotated tumour when >= 50% of it is inside the outline
 
 
 def project_2d(x: np.ndarray) -> np.ndarray:
@@ -36,26 +41,53 @@ def _r(x: float) -> float:
     return round(float(x), 4)
 
 
+def localisation(contributions: np.ndarray, reference: np.ndarray) -> dict | None:
+    """How well the highest-contribution patches match annotated tumour patches (positive slides only)."""
+    truth = reference >= REFERENCE_POSITIVE
+    if not truth.any() or truth.all():
+        return None
+    order = np.argsort(-contributions, kind="stable")
+    out = {"annotated_patches": int(truth.sum()), "chance": _r(truth.mean()),
+           "auroc": _r(metrics.auroc(truth.astype(int), contributions))}
+    for k in (1, 5, 10):
+        out[f"precision_at_{k}"] = _r(truth[order[:k]].mean())
+    return out
+
+
 def run_case(bundle: CaseBundle, model: CaseModel, report_fn: ReportFn | None = None,
-             k: int = 5, curve_len: int = 10) -> Iterator[StepEvent]:
+             k: int = 5, curve_len: int = 10, encoder: Encoder | None = None) -> Iterator[StepEvent]:
     def event(i: int, payload: dict, started: float, cached: bool = False) -> StepEvent:
         return StepEvent(case_id=bundle.case_id, step=STEPS[i], index=i, payload=payload,
                          cached=cached, elapsed_ms=_r((time.perf_counter() - started) * 1000))
 
+    meta = {k_: v for k_, v in bundle.meta.items() if not k_.startswith("_")}
     t = time.perf_counter()
-    yield event(0, {"thumbnail": png_data_url(bundle.thumbnail), "title": bundle.meta.get("title", ""),
-                    "domain": bundle.meta.get("domain", ""), "reference_label": bundle.label}, t)
+    yield event(0, {
+        "thumbnail": image_data_url(bundle.thumbnail),
+        "overlay": png_data_url(bundle.overlay) if bundle.overlay is not None else None,
+        "title": meta.get("title", ""), "domain": meta.get("domain", ""),
+        "source": meta.get("source", ""), "note": meta.get("note", ""),
+        "reference_label": bundle.label,
+        "image_size": list(bundle.thumbnail.shape[:2]),
+    }, t)
 
     t = time.perf_counter()
-    yield event(1, {"rows": bundle.grid[0], "cols": bundle.grid[1],
-                    "coords": bundle.coords.tolist(), "n_patches": len(bundle.coords)}, t)
+    reference = bundle.reference
+    yield event(1, {
+        "rows": bundle.grid[0], "cols": bundle.grid[1], "coords": bundle.coords.tolist(),
+        "n_patches": len(bundle.coords), "tile_um": meta.get("tile_um"),
+        "reference": None if reference is None else [_r(v) for v in reference],
+    }, t)
 
     t = time.perf_counter()
     if bundle.cached:
         emb = bundle.embeddings
     else:
-        emb = model.encoder().embed(bundle.patches)
-    yield event(2, {"encoder": model.spec.encoder, "dim": int(emb.shape[1]),
+        patches = bundle.patches
+        if patches.dtype == np.uint8:
+            patches = patches.astype(np.float32) / 255.0
+        emb = (encoder or model.encoder()).embed(patches)
+    yield event(2, {"encoder": meta.get("encoder", model.spec.encoder), "dim": int(emb.shape[1]),
                     "projection": np.round(project_2d(emb), 4).tolist()}, t, cached=bundle.cached)
 
     t = time.perf_counter()
@@ -79,7 +111,10 @@ def run_case(bundle: CaseBundle, model: CaseModel, report_fn: ReportFn | None = 
                  for i, (r, c) in enumerate(bundle.coords)],
         deletion_curve=[{"removed": n, "probability": _r(p)} for n, p in curve],
     )
-    yield event(4, {"evidence": evidence.model_dump(mode="json")}, t)
+    images = {str(pid): bytes_data_url(*patch_image(bundle, pid)) for pid in order[:GALLERY]}
+    yield event(4, {"evidence": evidence.model_dump(mode="json"), "patch_images": images,
+                    "localisation": None if reference is None else localisation(ex.contributions, reference)},
+                t)
 
     t = time.perf_counter()
     report = report_fn(evidence) if report_fn else {"pending": True}
