@@ -1,0 +1,33 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# node
+node_modules/
+web/dist/
+
+# data, weights, outputs (never commit)
+data/*
+!data/.gitkeep
+results/raw/
+*.pt
+*.pth
+*.onnx
+*.h5
+*.npy
+*.svs
+*.tif
+*.tiff
+
+# secrets / local
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+web/test-results/
+web/playwright-report/

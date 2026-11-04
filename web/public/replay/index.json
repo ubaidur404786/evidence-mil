@@ -1,0 +1,38 @@
+[
+ {
+  "case_id": "toy-01",
+  "title": "Pattern present",
+  "domain": "toy",
+  "label": 1
+ },
+ {
+  "case_id": "toy-02",
+  "title": "Noise only",
+  "domain": "toy",
+  "label": 0
+ },
+ {
+  "case_id": "toy-03",
+  "title": "Pattern present",
+  "domain": "toy",
+  "label": 1
+ },
+ {
+  "case_id": "toy-04",
+  "title": "Noise only",
+  "domain": "toy",
+  "label": 0
+ },
+ {
+  "case_id": "toy-05",
+  "title": "Pattern present",
+  "domain": "toy",
+  "label": 1
+ },
+ {
+  "case_id": "toy-06",
+  "title": "Ambiguous: one faint pattern",
+  "domain": "toy",
+  "label": 1
+ }
+]

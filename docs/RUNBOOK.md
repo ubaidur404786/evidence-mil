@@ -1,0 +1,66 @@
+# Runbook — commands the owner runs (long jobs, real data, Docker, cloud)
+
+All from the repo root in PowerShell unless noted. Nothing here commits data or weights.
+
+## 0. Local dev (minutes)
+```powershell
+uv sync --all-packages --all-extras
+uv run python scripts/build_demo.py           # toy model + demo cases + web/public/replay
+uv run uvicorn evidence_api.main:app_factory --factory --port 8000
+cd web; npm ci; npm run dev                   # http://localhost:5173 (proxies /api → :8000)
+```
+
+## 1. Real data, fast path: precomputed Phikon features (M2, ~1 h incl. download)
+Licence: Owkin non-commercial (docs/DATA.md). Portfolio/research use only.
+1. Download `owkin/camelyon16-features` from Hugging Face into `data/owkin_c16/`
+   (`uv run --with huggingface_hub hf download owkin/camelyon16-features --repo-type dataset --local-dir data/owkin_c16`).
+   Read the dataset card: confirm the `.npy` column layout matches `scripts/build_cache.py` (3 metadata cols + features).
+2. Create `data/c16_labels.csv` (`slide_id,label`) from the CAMELYON16 reference CSVs (normal_* = 0, tumor_* = 1,
+   test_* from the official `reference.csv`).
+3. Build the memory-mapped cache, then train (GPU, one bag per step, < 6 GB):
+```powershell
+uv run python scripts/build_cache.py --owkin data/owkin_c16 --labels data/c16_labels.csv --out data/cache_phikon
+uv run python scripts/train_real.py --config ml/configs/camelyon16_phikon_additive.yaml --seeds 0 1 2
+```
+   On Windows install the CUDA torch wheel first if `torch.cuda.is_available()` is False:
+   `uv pip install --index-url https://download.pytorch.org/whl/cu124 torch`.
+4. Paste `results/cache_phikon_results.md` back; commit it (the table, not the weights).
+
+## 2. Own embeddings on Kaggle (M2, several GPU sessions; resumable)
+Kaggle notebook, GPU T4, internet on. CAMELYON16 slides attached as a dataset (or downloaded from the
+official GigaScience/AWS open-data mirror). Each session processes one shard; re-running skips finished slides.
+```bash
+pip install openslide-python openslide-bin
+git clone https://github.com/<you>/evidence-mil && cd evidence-mil
+pip install -e contracts -e ml
+python scripts/extract_embeddings.py --slides /kaggle/input/camelyon16 --out /kaggle/working/emb_dinov2 \
+    --encoder dinov2 --variant dinov2_vits14 --batch 64 --shard 0 --num-shards 4
+```
+Download `/kaggle/working/emb_dinov2/*.npz` into `data/emb_dinov2/`, then:
+```powershell
+uv run python scripts/build_cache.py --emb data/emb_dinov2 --labels data/c16_labels.csv --out data/cache_dinov2
+```
+Copy the Phikon config, set `dir: data/cache_dinov2`, `encoder: {name: precomputed, dim: 384}`, and train as above.
+
+## 3. ONNX export + parity
+```powershell
+uv run evidencemil export-onnx --model results/raw/cache_phikon_additive --out results/raw/cache_phikon_additive/head.onnx
+uv run pytest ml -k onnx
+```
+
+## 4. Docker (M6)
+Start Docker Desktop, then:
+```powershell
+docker compose up --build -d --wait
+uv run python scripts/smoke.py http://localhost:8080/api
+```
+
+## 5. Kubernetes on kind (M7)
+Install kind (`winget install Kubernetes.kind`), then in Git Bash: `bash scripts/kind_up.sh`
+(dashboard at http://localhost:8081).
+
+## 6. Cloud (M8)
+Push to GitHub → CI builds and pushes `ghcr.io/<you>/evidence-mil-{api,web}`. Deploy both images on a free
+container host (check its current free-tier terms first; record the choice in DECISIONS). The web image proxies
+`/api/` to host `api:8000`; on hosts without service DNS, build web with `VITE_API_BASE=https://<api-url>` and set
+`EVIDENCE_CORS=https://<web-url>` on the api.

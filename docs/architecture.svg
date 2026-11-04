@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="756" viewBox="0 0 1200 756" role="img">
+<title>EvidenceMIL system flow</title>
+<desc>Grid: rows are system layers (dashboard, API, ML core, agent, data), columns are the six pipeline stages (input, tile, encode, aggregate, explain, report).</desc>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect width="1200" height="756" fill="#FFFFFF"/>
+<text x="30" y="42" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="26" font-weight="600" fill="#1F1F1E">EvidenceMIL — how the system flows</text>
+<text x="30" y="68" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" fill="#5F5E5A">Rows = system layers (folders). Columns = pipeline stages, left to right. One step event per column drives the dashboard animation.</text>
+<rect x="190" y="96" width="160" height="58" rx="10" fill="#2C2C2A"/>
+<text x="270.0" y="122" text-anchor="middle" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="22">📥</text>
+<text x="270.0" y="144" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">1  Input</text>
+<line x1="351" y1="125.0" x2="359" y2="125.0" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="360" y="96" width="160" height="58" rx="10" fill="#2C2C2A"/>
+<text x="440.0" y="122" text-anchor="middle" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="22">🧩</text>
+<text x="440.0" y="144" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">2  Tile</text>
+<line x1="521" y1="125.0" x2="529" y2="125.0" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="530" y="96" width="160" height="58" rx="10" fill="#2C2C2A"/>
+<text x="610.0" y="122" text-anchor="middle" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="22">🧠</text>
+<text x="610.0" y="144" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">3  Encode</text>
+<line x1="691" y1="125.0" x2="699" y2="125.0" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="700" y="96" width="160" height="58" rx="10" fill="#2C2C2A"/>
+<text x="780.0" y="122" text-anchor="middle" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="22">⚖️</text>
+<text x="780.0" y="144" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">4  Aggregate</text>
+<line x1="861" y1="125.0" x2="869" y2="125.0" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="870" y="96" width="160" height="58" rx="10" fill="#2C2C2A"/>
+<text x="950.0" y="122" text-anchor="middle" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="22">🔍</text>
+<text x="950.0" y="144" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">5  Explain</text>
+<line x1="1031" y1="125.0" x2="1039" y2="125.0" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="1040" y="96" width="160" height="58" rx="10" fill="#2C2C2A"/>
+<text x="1120.0" y="122" text-anchor="middle" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="22">📝</text>
+<text x="1120.0" y="144" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#FFFFFF">6  Report</text>
+<rect x="30" y="166" width="150" height="84" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="46" y="200" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="24">🖥️</text>
+<text x="82" y="198" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1F1F1E">Dashboard</text>
+<text x="46" y="228" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#185FA5">web/  React + TS</text>
+<rect x="190" y="166" width="160" height="84" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="270.0" y="203.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Pick a sample</text>
+<text x="270.0" y="223.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">case</text>
+<rect x="360" y="166" width="160" height="84" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="440.0" y="203.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Grid slices</text>
+<text x="440.0" y="223.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">the image</text>
+<rect x="530" y="166" width="160" height="84" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="610.0" y="203.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Patches light up,</text>
+<text x="610.0" y="223.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">map appears</text>
+<rect x="700" y="166" width="160" height="84" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="780.0" y="203.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Heatmap fades in,</text>
+<text x="780.0" y="223.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">score shown</text>
+<rect x="870" y="166" width="160" height="84" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="950.0" y="203.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Top patches, bars,</text>
+<text x="950.0" y="223.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">what-if slider</text>
+<rect x="1040" y="166" width="160" height="84" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="1120.0" y="203.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Report, citations,</text>
+<text x="1120.0" y="223.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">Approve button</text>
+<rect x="30" y="260" width="150" height="84" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="46" y="294" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="24">🔌</text>
+<text x="82" y="292" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1F1F1E">API</text>
+<text x="46" y="322" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#0F6E56">api/  FastAPI</text>
+<rect x="190" y="260" width="160" height="84" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="270.0" y="307.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">POST /runs</text>
+<rect x="360" y="260" width="160" height="84" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="440.0" y="297.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">SSE event:</text>
+<text x="440.0" y="317.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">tile</text>
+<rect x="530" y="260" width="160" height="84" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="610.0" y="297.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">SSE event:</text>
+<text x="610.0" y="317.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">encode</text>
+<rect x="700" y="260" width="160" height="84" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="780.0" y="297.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">SSE event:</text>
+<text x="780.0" y="317.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">mil</text>
+<rect x="870" y="260" width="160" height="84" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="950.0" y="297.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">SSE event:</text>
+<text x="950.0" y="317.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">explain</text>
+<rect x="1040" y="260" width="160" height="84" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="1120.0" y="297.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">SSE event:</text>
+<text x="1120.0" y="317.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">report + approve</text>
+<rect x="30" y="354" width="150" height="84" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="46" y="388" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="24">🧪</text>
+<text x="82" y="386" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1F1F1E">ML core</text>
+<text x="46" y="416" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#534AB7">ml/  PyTorch</text>
+<rect x="190" y="354" width="160" height="84" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="270.0" y="391.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Load image</text>
+<text x="270.0" y="411.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">or bundle</text>
+<rect x="360" y="354" width="160" height="84" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="440.0" y="391.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Tiler +</text>
+<text x="440.0" y="411.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">background filter</text>
+<rect x="530" y="354" width="160" height="84" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="610.0" y="391.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Frozen encoder</text>
+<text x="610.0" y="411.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">(cached in demo)</text>
+<rect x="700" y="354" width="160" height="84" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="780.0" y="391.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Additive MIL head</text>
+<text x="780.0" y="411.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">score = sum of parts</text>
+<rect x="870" y="354" width="160" height="84" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="950.0" y="391.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Contributions,</text>
+<text x="950.0" y="411.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">deletion curve</text>
+<rect x="1040" y="354" width="160" height="84" rx="10" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/>
+<text x="1120.0" y="391.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Evidence JSON</text>
+<text x="1120.0" y="411.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">handed to agent</text>
+<rect x="30" y="448" width="150" height="84" rx="10" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="46" y="482" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="24">🤖</text>
+<text x="82" y="480" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1F1F1E">Agent</text>
+<text x="46" y="510" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#993C1D">agent/  LangGraph</text>
+<rect x="190" y="448" width="160" height="84" rx="10" fill="none" stroke="#D3D1C7" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="270.0" y="495.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" fill="#B4B2A9">—</text>
+<rect x="360" y="448" width="160" height="84" rx="10" fill="none" stroke="#D3D1C7" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="440.0" y="495.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" fill="#B4B2A9">—</text>
+<rect x="530" y="448" width="160" height="84" rx="10" fill="none" stroke="#D3D1C7" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="610.0" y="495.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" fill="#B4B2A9">—</text>
+<rect x="700" y="448" width="160" height="84" rx="10" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="780.0" y="485.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Gate: quality,</text>
+<text x="780.0" y="505.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">abstain?</text>
+<rect x="870" y="448" width="160" height="84" rx="10" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="950.0" y="485.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Tools: what-if,</text>
+<text x="950.0" y="505.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">similar cases</text>
+<rect x="1040" y="448" width="160" height="84" rx="10" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="1120.0" y="485.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Draft, verify,</text>
+<text x="1120.0" y="505.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">human approval</text>
+<rect x="30" y="542" width="150" height="84" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="46" y="576" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="24">🗄️</text>
+<text x="82" y="574" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="16" font-weight="600" fill="#1F1F1E">Storage</text>
+<text x="46" y="604" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#5F5E5A">data/  models/</text>
+<rect x="190" y="542" width="160" height="84" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="589.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Sample bundles</text>
+<rect x="360" y="542" width="160" height="84" rx="10" fill="none" stroke="#D3D1C7" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="440.0" y="589.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="14" fill="#B4B2A9">—</text>
+<rect x="530" y="542" width="160" height="84" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="610.0" y="589.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Embedding cache</text>
+<rect x="700" y="542" width="160" height="84" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="780.0" y="579.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">ONNX model</text>
+<text x="780.0" y="599.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">registry</text>
+<rect x="870" y="542" width="160" height="84" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="950.0" y="579.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Postgres: cases,</text>
+<text x="950.0" y="599.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">audit log</text>
+<rect x="1040" y="542" width="160" height="84" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="1120.0" y="579.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="600" fill="#1F1F1E">Corrections feed</text>
+<text x="1120.0" y="599.0" text-anchor="middle" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#1F1F1E">retraining</text>
+<rect x="30" y="650" width="1140" height="62" rx="12" fill="#F7F6F2" stroke="#D3D1C7"/>
+<text x="58.0" y="689" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="26">🐳</text>
+<text x="98.0" y="679" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#1F1F1E">Docker Compose</text>
+<text x="98.0" y="698" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#5F5E5A">web + api + db</text>
+<line x1="289.0" y1="681" x2="309.0" y2="681" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="343.0" y="689" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="26">☸️</text>
+<text x="383.0" y="679" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#1F1F1E">Kubernetes</text>
+<text x="383.0" y="698" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#5F5E5A">kustomize, tested on kind</text>
+<line x1="574.0" y1="681" x2="594.0" y2="681" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="628.0" y="689" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="26">☁️</text>
+<text x="668.0" y="679" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#1F1F1E">Cloud</text>
+<text x="668.0" y="698" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#5F5E5A">free container host</text>
+<line x1="859.0" y1="681" x2="879.0" y2="681" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="913.0" y="689" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif" font-size="26">🛠️</text>
+<text x="953.0" y="679" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="15" font-weight="600" fill="#1F1F1E">GitHub Actions</text>
+<text x="953.0" y="698" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#5F5E5A">lint, test, build</text>
+<text x="30" y="736" font-family="'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" fill="#5F5E5A">Demo mode replays cached patch embeddings (labelled in the UI); tile display, MIL, explanation and agent run live. Decision-support demo, not a medical device.</text>
+</svg>

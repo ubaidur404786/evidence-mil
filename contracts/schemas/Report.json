@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "Report.json",
+  "title": "Report",
+  "description": "Agent-drafted, verifier-checked, human-approved report. Citations are patch ids from Evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "status", "sections", "verifier"],
+  "properties": {
+    "case_id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["abstained", "draft", "rejected", "approved", "edited"]},
+    "sections": {"type": "array", "items": {"$ref": "#/$defs/ReportSection"}},
+    "verifier": {"$ref": "#/$defs/VerifierResult"}
+  },
+  "$defs": {
+    "ReportSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "text", "citations"],
+      "properties": {
+        "title": {"type": "string"},
+        "text": {"type": "string"},
+        "citations": {"type": "array", "items": {"type": "integer", "minimum": 0}}
+      }
+    },
+    "VerifierResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "errors"],
+      "properties": {
+        "passed": {"type": "boolean"},
+        "errors": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

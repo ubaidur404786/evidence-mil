@@ -1,0 +1,14 @@
+# Cloud: images from GHCR, ingress with TLS host. Create the secret out of band:
+#   kubectl -n evidence-mil create secret generic api-secrets --from-literal=EVIDENCE_LLM_KEY=...
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: [../../base, ingress.yaml]
+images:
+  - { name: evidence-api, newName: ghcr.io/ubaidur404786/evidence-mil-api, newTag: latest }
+  - { name: evidence-web, newName: ghcr.io/ubaidur404786/evidence-mil-web, newTag: latest }
+patches:
+  - target: { kind: Deployment, name: web }
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 2

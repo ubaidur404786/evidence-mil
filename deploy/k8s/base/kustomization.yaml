@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: evidence-mil
+resources:
+  - namespace.yaml
+  - api.yaml
+  - web.yaml
+configMapGenerator:
+  - name: api-config
+    literals:
+      - EVIDENCE_LLM=template
+      - EVIDENCE_LLM_MODEL=llama3.2
+labels:
+  - pairs: { app.kubernetes.io/part-of: evidence-mil }

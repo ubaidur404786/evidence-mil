@@ -1,0 +1,5 @@
+data: {kind: toy, n_train: 160, n_val: 60, n_test: 100, seed: 0, grid: [8, 8]}
+encoder: {name: fake, dim: 32}
+head: {name: additive, hidden: 32, dropout: 0.0}
+train: {epochs: 15, lr: 0.003}
+abstain: {low: 0.4, high: 0.6}

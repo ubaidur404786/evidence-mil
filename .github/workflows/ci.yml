@@ -1,0 +1,76 @@
+name: ci
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: { module: [contracts, ml, agent, api] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with: { version: "0.11.21" }
+      - name: Install (CPU torch)
+        run: uv sync --all-packages --all-extras
+        env: { UV_TORCH_BACKEND: cpu }
+      - run: uv run ruff check ${{ matrix.module }}
+      - run: uv run pytest ${{ matrix.module }} -q
+
+  contracts-in-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with: { version: "0.11.21" }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: uv sync --package evidence-contracts && uv run --with datamodel-code-generator python contracts/generate.py
+      - run: git diff --exit-code contracts/
+
+  web:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: web } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: web/package-lock.json }
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npx playwright install --with-deps chromium && npx playwright test
+
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render and validate kustomize overlays
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | tar xz
+          for o in local cloud; do kubectl kustomize deploy/k8s/overlays/$o | ./kubeconform -strict -summary -; done
+
+  images:
+    runs-on: ubuntu-latest
+    needs: [python, web]
+    permissions: { contents: read, packages: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        if: github.ref == 'refs/heads/main'
+        with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
+      - name: Build (push on main)
+        run: |
+          for svc in api web; do
+            docker buildx build -f deploy/docker/$svc.Dockerfile \
+              -t ghcr.io/${{ github.repository_owner }}/evidence-mil-$svc:latest \
+              $([ "${{ github.ref }}" = "refs/heads/main" ] && echo --push || echo --load) .
+          done
+      - name: Compose smoke test
+        if: github.ref != 'refs/heads/main'
+        run: |
+          docker compose up -d --build --wait
+          python3 scripts/smoke.py http://localhost:8080/api
+          docker compose down

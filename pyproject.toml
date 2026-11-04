@@ -1,0 +1,31 @@
+[project]
+name = "evidence-mil"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["evidence-contracts", "evidencemil", "evidence-agent", "evidence-api"]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6", "jsonschema>=4", "datamodel-code-generator>=0.26", "httpx>=0.27"]
+
+[tool.uv.workspace]
+members = ["contracts", "ml", "agent", "api"]
+
+[tool.uv.sources]
+evidence-contracts = { workspace = true }
+evidencemil = { workspace = true }
+evidence-agent = { workspace = true }
+evidence-api = { workspace = true }
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["contracts/src/evidence_contracts/models.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
+
+[tool.ruff.lint.isort]
+known-first-party = ["evidencemil", "evidence_contracts", "evidence_agent", "evidence_api"]

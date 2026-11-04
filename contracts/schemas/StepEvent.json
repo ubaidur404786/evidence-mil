@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "StepEvent.json",
+  "title": "StepEvent",
+  "description": "One pipeline stage result, streamed by the API (SSE) and replayed by the dashboard.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "step", "index", "payload"],
+  "properties": {
+    "case_id": {"type": "string", "minLength": 1},
+    "step": {"$ref": "#/$defs/StepName"},
+    "index": {"type": "integer", "minimum": 0, "maximum": 5},
+    "payload": {"type": "object", "description": "Stage-specific data; see docs/ARCHITECTURE.md section 2."},
+    "cached": {"type": "boolean", "default": false},
+    "elapsed_ms": {"type": "number", "minimum": 0}
+  },
+  "$defs": {
+    "StepName": {"type": "string", "enum": ["input", "tile", "encode", "aggregate", "explain", "report"]}
+  }
+}

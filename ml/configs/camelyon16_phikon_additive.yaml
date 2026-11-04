@@ -1,0 +1,8 @@
+# Real-data run on precomputed Phikon features (owkin/camelyon16-features, non-commercial licence).
+# Prepare: scripts/build_cache.py --owkin ... --out data/cache_phikon (see docs/RUNBOOK.md).
+# `splits` is read from data/cache_phikon/splits.json by scripts/train_real.py.
+data: {kind: cache, dir: data/cache_phikon}
+encoder: {name: precomputed, dim: 768}
+head: {name: additive, hidden: 128, dropout: 0.25}
+train: {epochs: 40, lr: 0.0002, weight_decay: 0.0001, device: cuda}
+abstain: {low: 0.35, high: 0.65}

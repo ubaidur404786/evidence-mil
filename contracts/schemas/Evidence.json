@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "Evidence.json",
+  "title": "Evidence",
+  "description": "Everything the MIL head produced for one case. sum(contribution) + bias == logit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "logit", "bias", "probability", "abstain", "patches", "top_k", "deletion_curve"],
+  "properties": {
+    "case_id": {"type": "string", "minLength": 1},
+    "logit": {"type": "number"},
+    "bias": {"type": "number"},
+    "probability": {"type": "number", "minimum": 0, "maximum": 1},
+    "abstain": {"type": "boolean"},
+    "patches": {"type": "array", "items": {"$ref": "#/$defs/PatchEvidence"}},
+    "top_k": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+    "deletion_curve": {"type": "array", "items": {"$ref": "#/$defs/CurvePoint"}}
+  },
+  "$defs": {
+    "PatchEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["patch_id", "row", "col", "attention", "contribution"],
+      "properties": {
+        "patch_id": {"type": "integer", "minimum": 0},
+        "row": {"type": "integer", "minimum": 0},
+        "col": {"type": "integer", "minimum": 0},
+        "attention": {"type": "number", "minimum": 0, "maximum": 1},
+        "contribution": {"type": "number"}
+      }
+    },
+    "CurvePoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["removed", "probability"],
+      "properties": {
+        "removed": {"type": "integer", "minimum": 0},
+        "probability": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}
