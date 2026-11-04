@@ -1,0 +1,251 @@
+{
+ "summary": {
+  "additive MIL (ours)": {
+   "slides": 5,
+   "decisions_correct": 4,
+   "abstained": 1,
+   "wrong": 0,
+   "loc_auroc": 0.95825,
+   "precision_at_10": 0.8999999999999999,
+   "chance": 0.036574999999999996
+  },
+  "attention MIL": {
+   "slides": 5,
+   "decisions_correct": 4,
+   "abstained": 0,
+   "wrong": 1,
+   "loc_auroc": 0.9843249999999999,
+   "precision_at_10": 0.9249999999999999,
+   "chance": 0.036574999999999996
+  },
+  "supervised patch classifier": {
+   "slides": 5,
+   "decisions_correct": 4,
+   "abstained": 0,
+   "wrong": 1,
+   "loc_auroc": 0.962525,
+   "precision_at_10": 0.825,
+   "chance": 0.036574999999999996
+  },
+  "mean pooling": {
+   "slides": 5,
+   "decisions_correct": 1,
+   "abstained": 1,
+   "wrong": 3,
+   "loc_auroc": null,
+   "precision_at_10": null,
+   "chance": null
+  }
+ },
+ "per_slide": {
+  "c16-test_001": {
+   "label": 1,
+   "tumour_patches": 163,
+   "patches": 3000,
+   "additive MIL (ours)": {
+    "p": 0.9988218354671248,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 163,
+     "chance": 0.0543,
+     "auroc": 0.9555,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 1.0
+    }
+   },
+   "attention MIL": {
+    "p": 0.9999791388579533,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 163,
+     "chance": 0.0543,
+     "auroc": 0.9972,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 1.0
+    }
+   },
+   "mean pooling": {
+    "p": 0.15951843423015982,
+    "abstain": false,
+    "loc": null
+   },
+   "supervised patch classifier": {
+    "p": 0.9999715089797974,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 163,
+     "chance": 0.0543,
+     "auroc": 0.9933,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 1.0
+    }
+   }
+  },
+  "c16-test_027": {
+   "label": 1,
+   "tumour_patches": 106,
+   "patches": 3000,
+   "additive MIL (ours)": {
+    "p": 0.9996585623387794,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 106,
+     "chance": 0.0353,
+     "auroc": 1.0,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 1.0
+    }
+   },
+   "attention MIL": {
+    "p": 0.9996781694062623,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 106,
+     "chance": 0.0353,
+     "auroc": 1.0,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 1.0
+    }
+   },
+   "mean pooling": {
+    "p": 0.31245979393303125,
+    "abstain": false,
+    "loc": null
+   },
+   "supervised patch classifier": {
+    "p": 1.0,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 106,
+     "chance": 0.0353,
+     "auroc": 0.9994,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 1.0
+    }
+   }
+  },
+  "c16-test_062": {
+   "label": 0,
+   "tumour_patches": 0,
+   "patches": 2977,
+   "additive MIL (ours)": {
+    "p": 0.46950672617061456,
+    "abstain": true,
+    "loc": null
+   },
+   "attention MIL": {
+    "p": 0.9638916105570512,
+    "abstain": false,
+    "loc": null
+   },
+   "mean pooling": {
+    "p": 0.4004991648342875,
+    "abstain": true,
+    "loc": null
+   },
+   "supervised patch classifier": {
+    "p": 0.9857316613197327,
+    "abstain": false,
+    "loc": null
+   }
+  },
+  "c16-test_065": {
+   "label": 1,
+   "tumour_patches": 10,
+   "patches": 1752,
+   "additive MIL (ours)": {
+    "p": 0.9995244074549696,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 10,
+     "chance": 0.0057,
+     "auroc": 0.9978,
+     "precision_at_1": 1.0,
+     "precision_at_5": 0.8,
+     "precision_at_10": 0.8
+    }
+   },
+   "attention MIL": {
+    "p": 0.9997949794458888,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 10,
+     "chance": 0.0057,
+     "auroc": 0.998,
+     "precision_at_1": 1.0,
+     "precision_at_5": 0.8,
+     "precision_at_10": 0.8
+    }
+   },
+   "mean pooling": {
+    "p": 0.06012703311489075,
+    "abstain": false,
+    "loc": null
+   },
+   "supervised patch classifier": {
+    "p": 0.8247995972633362,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 10,
+     "chance": 0.0057,
+     "auroc": 0.8842,
+     "precision_at_1": 0.0,
+     "precision_at_5": 0.6,
+     "precision_at_10": 0.3
+    }
+   }
+  },
+  "c16-test_094": {
+   "label": 1,
+   "tumour_patches": 153,
+   "patches": 3000,
+   "additive MIL (ours)": {
+    "p": 0.992288462995823,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 153,
+     "chance": 0.051,
+     "auroc": 0.8797,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 0.8
+    }
+   },
+   "attention MIL": {
+    "p": 0.9995637405191302,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 153,
+     "chance": 0.051,
+     "auroc": 0.9421,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 0.9
+    }
+   },
+   "mean pooling": {
+    "p": 0.7268525003992458,
+    "abstain": false,
+    "loc": null
+   },
+   "supervised patch classifier": {
+    "p": 0.8953625559806824,
+    "abstain": false,
+    "loc": {
+     "annotated_patches": 153,
+     "chance": 0.051,
+     "auroc": 0.9732,
+     "precision_at_1": 1.0,
+     "precision_at_5": 1.0,
+     "precision_at_10": 1.0
+    }
+   }
+  }
+ }
+}

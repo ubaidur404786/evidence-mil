@@ -59,3 +59,11 @@ Each gate = tests green + boxes ticked. Update this file as you go.
 - [x] README (problem, diagram, GIF, results, quickstart, limits, Acknowledgements incl. Claude assistance) — real-data results + GIF pending
 - [ ] Record demo video from `docs/DEMO_SCRIPT.md`; LinkedIn post draft — LinkedIn draft in `docs/LINKEDIN_POST.md`; video is the owner's
 - Gate ⏳: fresh-clone quickstart works; links checked.
+
+## M9 — Real slides, uploads, method comparison (prototype)
+- [x] CC0 CAMELYON16 slides + annotations downloaded (resumable range downloader); own 20x tiling + live Phikon
+- [x] Upload endpoint (tile → live encode on run → explain → report), packs (toy, c16), patch crops endpoint
+- [x] Review workstation UI: worklist, slide viewer with evidence layers, patch inspector, comparison + method pages
+- [x] Localisation vs pathologist outlines (`results/c16_localisation.md`); comparison with attention MIL,
+      annotation-trained patch classifier and mean pooling (`results/c16_comparison.md`)
+- Gate ✅: tests green (python + vitest + Playwright), real-tissue upload verified (tumour region → P = 0.9996).

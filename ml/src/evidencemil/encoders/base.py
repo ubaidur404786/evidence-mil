@@ -27,7 +27,7 @@ def register(name: str) -> Callable:
 
 def build_encoder(name: str, **kwargs) -> Encoder:
     # Import side-effect registers the built-in encoders.
-    from evidencemil.encoders import dinov2, fake  # noqa: F401
+    from evidencemil.encoders import dinov2, fake, phikon  # noqa: F401
 
     if name not in _REGISTRY:
         raise KeyError(f"unknown encoder {name!r}; known: {sorted(_REGISTRY)}")

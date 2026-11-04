@@ -29,8 +29,10 @@ def project_2d(x: np.ndarray) -> np.ndarray:
     centred = x - x.mean(axis=0, keepdims=True)
     if len(x) < 2:
         return np.zeros((len(x), 2), dtype=np.float32)
-    _, _, vt = np.linalg.svd(centred, full_matrices=False)
-    p = centred @ vt[:2].T
+    # Eigen-decomposition of the D x D covariance in torch (numpy BLAS can be very slow on Windows).
+    c = torch.from_numpy(np.ascontiguousarray(centred, dtype=np.float32))
+    _, vecs = torch.linalg.eigh((c.T @ c).double())
+    p = (c @ vecs[:, -2:].flip(1).float()).numpy()
     if p.shape[1] < 2:
         p = np.pad(p, ((0, 0), (0, 2 - p.shape[1])))
     scale = np.abs(p).max(axis=0, keepdims=True)

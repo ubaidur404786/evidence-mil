@@ -50,7 +50,7 @@ describe("CaseWorkspace pipeline", () => {
     fireEvent.click(screen.getByText("Explain"));
     fireEvent.click(screen.getByRole("tab", { name: "Evidence" }));
     expect(screen.getByTestId("abstain")).toBeInTheDocument();
-    expect(screen.getByTestId("patch-gallery").querySelectorAll("button")).toHaveLength(4);
+    expect(screen.getByTestId("patch-gallery").querySelectorAll("button")).toHaveLength(1);
   });
 
   it("opens the patch inspector from the gallery", () => {

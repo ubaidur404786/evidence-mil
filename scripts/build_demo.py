@@ -64,6 +64,9 @@ def main() -> None:
                       "live_encoder": "phikon", "patch_px": 224, "min_tissue": 0.5, "tile_um": 112})
     (ROOT / "data/packs.json").write_text(json.dumps(packs, indent=1))
     record_replays(packs, ROOT / "web/public/replay")
+    comparison = ROOT / "results/c16_comparison.json"
+    if comparison.exists():  # shown on the dashboard's "Compare methods" page
+        (ROOT / "web/public/replay/comparison.json").write_text(comparison.read_text(encoding="utf-8"), encoding="utf-8")
 
     lines = ["# Toy task results (synthetic, fake encoder)", "",
              "Same splits (160 train / 60 val / 100 test bags), 8×8 patches, 1–4 positive patches.",

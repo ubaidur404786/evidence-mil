@@ -29,8 +29,8 @@ https://huggingface.co/datasets/kaczmarj/camelyon16-uni · https://torchmil.read
 
 Rule: pick by licence first, then by results. Portfolio use may allow non-commercial weights; say so in the README.
 
-## Feature ↔ slide alignment (verified)
-Owkin feature rows for the test split are in official order: row i = `test_{i+1:03d}` (all 129 labels match
-`reference.csv`; the one slide missing from reference.csv has no label there). Tile coordinates are (DeepZoom level 17, x, y) of
-224 px tiles; `scripts/build_c16_cases.py` re-encodes sampled tiles with Phikon and records the median
-cosine similarity to the cached vectors per slide (`alignment_cosine` in the case metadata).
+## Feature ↔ slide notes
+Owkin feature rows for the test split are in official order (row i = `test_{i+1:03d}`; all labels match
+`reference.csv`). The public Phikon weights do not reproduce those vectors, so real demo cases use our own
+tiling + live Phikon features (DECISIONS ADR-014). Downloaded slides: test_001, 027, 062, 065, 094 (+057, 051
+if present), via `scripts/download_c16.py`.

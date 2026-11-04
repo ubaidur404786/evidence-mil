@@ -44,7 +44,10 @@ def image_to_bundle(data: bytes, filename: str, pack: Pack) -> CaseBundle:
     if min(rgb.shape[:2]) < pack.patch_px:
         raise UploadError(f"image is smaller than one {pack.patch_px} px tile")
 
-    tiles = tile_image(rgb, pack.patch_px, background_level=0.8, min_tissue=pack.min_tissue)
+    try:
+        tiles = tile_image(rgb, pack.patch_px, background_level=0.8, min_tissue=pack.min_tissue)
+    except ValueError as exc:  # e.g. every tile is background
+        raise UploadError(f"no tissue found: {exc}") from exc
     if len(tiles.patches) > MAX_PATCHES:
         raise UploadError(f"{len(tiles.patches)} tissue tiles; max is {MAX_PATCHES}. Crop the region of interest.")
 

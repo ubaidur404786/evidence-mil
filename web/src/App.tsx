@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { pickSource, type Source } from "./api";
 import { CaseWorkspace } from "./components/CaseWorkspace";
+import { Compare, HowItWorks } from "./components/InfoPages";
 import { UploadDialog } from "./components/UploadDialog";
 import { Worklist, type CaseState } from "./components/Worklist";
 import { deriveView } from "./lib/derive";
@@ -17,6 +18,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [uploading, setUploading] = useState(false);
+  const [page, setPage] = useState<"review" | "how" | "compare">("review");
 
   useEffect(() => {
     if (!source) pickSource().then(setSource);
@@ -67,13 +69,20 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
             <p>Explainable image review · see which patches decided the prediction</p>
           </div>
         </div>
+        <nav className="nav" aria-label="sections">
+          {([["review", "Review"], ["how", "How it works"], ["compare", "Compare methods"]] as const).map(([k, label]) => (
+            <button key={k} className={page === k ? "is-on" : ""} onClick={() => setPage(k)}>{label}</button>
+          ))}
+        </nav>
         <div className="topbar__right">
           {source && <span className={`chip ${source.live ? "chip--live" : ""}`}>{source.live ? "Live API" : "Replay · recorded runs"}</span>}
           {canUpload && <button onClick={() => setUploading(true)} data-testid="upload-open">Upload image</button>}
         </div>
       </header>
 
-      <div className="layout">
+      {page === "how" && <HowItWorks />}
+      {page === "compare" && <Compare />}
+      <div className="layout" hidden={page !== "review"}>
         <Worklist cases={cases} states={states} current={caseId} onOpen={open} />
         <main className="main">
           {error && <p className="banner bad">{error}</p>}

@@ -21,7 +21,17 @@ uv run python scripts/train_real.py --config ml/configs/camelyon16_phikon_additi
 uv run python scripts/build_real_cases.py --cache data/cache_phikon --model results/raw/cache_phikon_additive --out data/demo_cases_c16
 ```
    Close Docker Desktop first on an 8 GB laptop (training was killed once for low memory while kind was running).
-3. Paste `results/cache_phikon_results.md` back; commit it (the table, not the weights).
+3. Real slides, demo cases and the method comparison (GPU; extras `wsi` + `phikon`):
+```powershell
+uv pip install "openslide-python>=1.3" "openslide-bin>=4.0" pillow "transformers>=4.40" safetensors
+uv run --no-sync python scripts/download_c16.py test_001 test_027 test_062 test_065 test_094   # CC0, ~5 GB
+uv run --no-sync python scripts/build_c16_cases.py --out data/demo_cases_c16      # tile 20x + live Phikon
+uv run --no-sync python scripts/evaluate_localisation.py --cases data/demo_cases_c16 --model results/raw/cache_phikon_additive
+uv run --no-sync python scripts/compare_methods.py --cases data/demo_cases_c16    # writes results/c16_comparison.md
+uv run --no-sync python scripts/build_demo.py      # data/packs.json + recorded runs for the web demo
+$env:EVIDENCE_PACKS="data/packs.json"; uv run --no-sync uvicorn evidence_api.main:app_factory --factory --port 8000
+```
+   The first upload to the c16 pack loads Phikon (≈ 1–2 min); later uploads of ~100 tiles take a few seconds on GPU.
 
 ## GPU (RTX 3050, driver 592.82 / CUDA 13.1)
 The lock file keeps CPU torch (CI and Docker have no GPU). For local GPU work, install the CUDA wheel and use

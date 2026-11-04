@@ -34,17 +34,17 @@ def main() -> None:
         ex = explain_bag(model.head, torch.from_numpy(b.embeddings), model.spec.temperature)
         loc = localisation(ex.contributions, b.reference)
         if loc:
-            rows.append((b.case_id, ex.probability, loc, meta.get("alignment_cosine")))
+            rows.append((b.case_id, ex.probability, loc, None))
 
     lines = ["# CAMELYON16: do the top patches fall inside the pathologist's tumour outline?", "",
              "A patch counts as tumour when ≥ 50% of it lies inside the annotation. Chance = share of",
-             "sampled patches that are tumour. Additive head, Phikon features (seed 0).", "",
-             "| slide | P(tumour) | tumour patches | chance | precision@1 | @5 | @10 | AUROC | tile placement cos |",
-             "|---|---|---|---|---|---|---|---|---|"]
-    for cid, p, loc, cos in rows:
+             "sampled patches that are tumour. Additive head (seed 0) on live Phikon features of our 20x tiling.", "",
+             "| slide | P(tumour) | tumour patches | chance | precision@1 | @5 | @10 | AUROC |",
+             "|---|---|---|---|---|---|---|---|"]
+    for cid, p, loc, _cos in rows:
         lines.append(f"| {cid} | {p:.3f} | {loc['annotated_patches']} | {loc['chance']:.3f} | "
                      f"{loc['precision_at_1']:.2f} | {loc['precision_at_5']:.2f} | {loc['precision_at_10']:.2f} | "
-                     f"{loc['auroc']:.3f} | {cos} |")
+                     f"{loc['auroc']:.3f} |")
     if rows:
         m = {k: np.mean([r[2][k] for r in rows]) for k in ("chance", "precision_at_5", "auroc")}
         lines += ["", f"Mean over {len(rows)} slides: precision@5 {m['precision_at_5']:.2f} "

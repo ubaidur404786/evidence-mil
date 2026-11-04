@@ -32,3 +32,6 @@ known-first-party = ["evidencemil", "evidence_contracts", "evidence_agent", "evi
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.File", "fastapi.Form"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*" = ["E501"]

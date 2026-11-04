@@ -66,10 +66,14 @@ switchable evidence layers, and a side panel that keeps the score, its exact dec
 patches, the what-if test and the sign-off together. The six-step replay stays as the pipeline bar.
 Canvas overlay (not DOM cells) so slides with hundreds of grid columns stay fast.
 
-## ADR-014 — Real slides: tile placement is checked, not assumed
-Cached Phikon features carry DeepZoom tile indices. We place them on the CC0 slide images and verify by
-re-encoding sampled tiles with Phikon and comparing to the cached vectors. Agreement with pathologist
-annotations (precision@k vs chance, ranking AUROC) is reported per slide in `results/c16_localisation.md`.
+## ADR-014 — Real slides: our own 20x tiling + live Phikon features
+The cached Owkin features cannot be reproduced with the public `owkin/phikon` weights (median cosine ≈ 0.35
+at the right tiles; a ridge adapter fitted on 4 slides did not transfer leave-one-slide-out), and their
+tile coordinates do not line up on every slide. So demo slides are tiled by us at 20x (224 px ≈ 112 µm,
+tissue by saturation mask, ≤ 3000 tiles) and encoded live with Phikon, exactly like uploads. The head stays
+trained on the cached features (full-test-set AUROC table); on live features it gives correct decisions and
+near-perfect localisation on the downloaded slides (`results/c16_localisation.md`). One pipeline for demo
+cases and uploads; no 400 GB re-extraction needed for the prototype.
 
 ## ADR-015 — Uploads: tiles kept raw, encoded on run
 Uploads (PNG/JPEG/TIFF ≤ 64 MB, ≤ 8192 px/side, ≤ 1500 tissue tiles) are tiled at the pack's patch size and

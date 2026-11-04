@@ -50,6 +50,8 @@ export function SlideViewer(props: ViewerProps) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState<{ width: number; height: number } | null>(null);
   const [h, w] = imageSize[0] ? imageSize : [rows * 16, cols * 16];
   const cw = w / cols;
   const ch = h / rows;
@@ -110,6 +112,22 @@ export function SlideViewer(props: ViewerProps) {
     }
   }, [coords, layer, values, highlight, hidden, selected, w, h, cw, ch]);
 
+  // Fit the image inside the viewer box while keeping its aspect ratio (image and canvas share this box).
+  useEffect(() => {
+    const el = box.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const update = () => {
+      const bw = el.clientWidth;
+      const bh = el.clientHeight;
+      const s = Math.min(bw / w, bh / h);
+      setFit({ width: w * s, height: h * s });
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [w, h]);
+
   function onWheel(e: WheelEvent) {
     e.preventDefault();
     setZoom((z) => Math.min(24, Math.max(1, z * (e.deltaY < 0 ? 1.2 : 1 / 1.2))));
@@ -141,7 +159,7 @@ export function SlideViewer(props: ViewerProps) {
   }
 
   return (
-    <div className="viewer" onWheel={onWheel} data-testid="slide-viewer">
+    <div className="viewer" onWheel={onWheel} data-testid="slide-viewer" ref={box}>
       <div className="viewer__tools">
         <button className="icon" aria-label="zoom in" onClick={() => setZoom((z) => Math.min(24, z * 1.5))}>+</button>
         <button className="icon" aria-label="zoom out" onClick={() => setZoom((z) => Math.max(1, z / 1.5))}>−</button>
@@ -150,7 +168,7 @@ export function SlideViewer(props: ViewerProps) {
       </div>
       <div
         className="viewer__stage"
-        style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, aspectRatio: `${w} / ${h}` }}
+        style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, width: fit?.width, height: fit?.height }}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
