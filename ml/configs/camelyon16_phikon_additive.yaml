@@ -4,5 +4,5 @@
 data: {kind: cache, dir: data/cache_phikon}
 encoder: {name: precomputed, dim: 768}
 head: {name: additive, hidden: 128, dropout: 0.25}
-train: {epochs: 40, lr: 0.0002, weight_decay: 0.0001, device: cuda}
+train: {epochs: 40, lr: 0.0002, weight_decay: 0.0001, device: cpu}  # small head; CPU is enough
 abstain: {low: 0.35, high: 0.65}

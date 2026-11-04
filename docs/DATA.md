@@ -7,7 +7,7 @@ and must be checked before use. Never commit data or weights.
 | Name | Use | Access note | Licence | Verified |
 |---|---|---|---|---|
 | CAMELYON16 (399 slides: 270 train, 129 test) | main pack | open hosting via GigaScience / challenge site; size reported ~0.9 TB | grand-challenge Data page footer: "made available under CC0"; page calls the data open access. Footer may cover the page, not the slides, so we treat use as research/non-commercial and cite the challenge | 2026-11-04 |
-| owkin/camelyon16-features (Phikon features) | fast head validation | Hugging Face | "Owkin non-commercial license" (card, links HistoSSLscaling LICENSE.txt) | 2026-11-04 |
+| owkin/camelyon16-features (Phikon features) | fast head validation | Hugging Face, 3 parquet files, 1.2 GB; 399 slides × ≤1000 tiles, cols = (level, x, y) + 768 features | Owkin non-commercial licence (HistoSSLscaling LICENSE.txt, read in full): non-commercial research by non-profit entities; results for other uses need Owkin approval; derivatives under same terms. Used locally only; features never committed or shipped in images | 2026-11-04 |
 | kaczmarj/camelyon16-uni (UNI features) | fast head validation | Hugging Face, gated (accept conditions) | CC-BY-NC-SA-4.0, non-commercial academic only (card) | 2026-11-04 |
 | torchmil Camelyon16 MIL (UNI or resnet50_bt features) | fast head validation | library download | check | no |
 | Synthetic toy bags | tests + first demo | generated | ours | n/a |

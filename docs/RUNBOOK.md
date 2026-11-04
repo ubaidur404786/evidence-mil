@@ -12,19 +12,16 @@ cd web; npm ci; npm run dev                   # http://localhost:5173 (proxies /
 
 ## 1. Real data, fast path: precomputed Phikon features (M2, ~1 h incl. download)
 Licence: Owkin non-commercial (docs/DATA.md). Portfolio/research use only.
-1. Download `owkin/camelyon16-features` from Hugging Face into `data/owkin_c16/`
-   (`uv run --with huggingface_hub hf download owkin/camelyon16-features --repo-type dataset --local-dir data/owkin_c16`).
-   Read the dataset card: confirm the `.npy` column layout matches `scripts/build_cache.py` (3 metadata cols + features).
-2. Create `data/c16_labels.csv` (`slide_id,label`) from the CAMELYON16 reference CSVs (normal_* = 0, tumor_* = 1,
-   test_* from the official `reference.csv`).
-3. Build the memory-mapped cache, then train (GPU, one bag per step, < 6 GB):
+1. Download (1.2 GB):
+   `uv run --with huggingface_hub hf download owkin/camelyon16-features --repo-type dataset --include "data/*" --local-dir data/owkin_c16`
+2. Build the memory-mapped cache (labels and tile coordinates come from the parquet files), then train on CPU:
 ```powershell
-uv run python scripts/build_cache.py --owkin data/owkin_c16 --labels data/c16_labels.csv --out data/cache_phikon
+uv run python scripts/build_cache.py --owkin data/owkin_c16/data --out data/cache_phikon
 uv run python scripts/train_real.py --config ml/configs/camelyon16_phikon_additive.yaml --seeds 0 1 2
+uv run python scripts/build_real_cases.py --cache data/cache_phikon --model results/raw/cache_phikon_additive --out data/demo_cases_c16
 ```
-   On Windows install the CUDA torch wheel first if `torch.cuda.is_available()` is False:
-   `uv pip install --index-url https://download.pytorch.org/whl/cu124 torch`.
-4. Paste `results/cache_phikon_results.md` back; commit it (the table, not the weights).
+   Close Docker Desktop first on an 8 GB laptop (training was killed once for low memory while kind was running).
+3. Paste `results/cache_phikon_results.md` back; commit it (the table, not the weights).
 
 ## 2. Own embeddings on Kaggle (M2, several GPU sessions; resumable)
 Kaggle notebook, GPU T4, internet on. CAMELYON16 slides attached as a dataset (or downloaded from the

@@ -12,7 +12,7 @@ COPY contracts contracts
 COPY ml ml
 COPY agent agent
 COPY api api
-RUN uv pip install ./contracts ./ml ./agent ./api
+RUN uv pip install --no-sources ./contracts ./ml ./agent ./api
 # Demo assets are generated, never committed (ADR-003): toy model + cached-embedding cases.
 COPY scripts/build_demo.py scripts/build_demo.py
 RUN mkdir -p results web/public/replay && python scripts/build_demo.py > /dev/null
@@ -28,6 +28,6 @@ WORKDIR /app
 RUN mkdir /app/state && chown app /app/state
 USER app
 EXPOSE 8000
-HEALTHCHECK --interval=15s --timeout=3s --retries=5 \
+HEALTHCHECK --interval=10s --timeout=5s --start-period=90s --retries=5 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 CMD ["uvicorn", "evidence_api.main:app_factory", "--factory", "--host", "0.0.0.0", "--port", "8000"]
