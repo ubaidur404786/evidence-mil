@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { pickSource, type Source } from "./api";
 import { CaseWorkspace } from "./components/CaseWorkspace";
+import { FlowRunner } from "./components/FlowRunner";
 import { Compare, HowItWorks } from "./components/InfoPages";
 import { UploadDialog } from "./components/UploadDialog";
 import { Worklist, type CaseState } from "./components/Worklist";
@@ -19,6 +20,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
   const [error, setError] = useState<string>();
   const [uploading, setUploading] = useState(false);
   const [page, setPage] = useState<"review" | "how" | "compare">("review");
+  const [mode, setMode] = useState<"flow" | "workstation">("flow");
 
   useEffect(() => {
     if (!source) pickSource().then(setSource);
@@ -94,8 +96,26 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
               {!source?.live && <p className="muted small">Public demo: recorded runs. Run the API locally for live analysis and uploads.</p>}
             </div>
           )}
-          {loading && <p className="muted pad" data-testid="loading">Running the pipeline…</p>}
+          {loading && <div className="processing" data-testid="loading"><span className="processing__ring" aria-hidden /><span>Running the model on this case… (first live run loads the encoder)</span></div>}
           {view && runId && (
+            <div className="modebar" role="tablist" aria-label="view">
+              <button role="tab" aria-selected={mode === "flow"} className={mode === "flow" ? "is-on" : ""} onClick={() => setMode("flow")}>Pipeline flow</button>
+              <button role="tab" aria-selected={mode === "workstation"} className={mode === "workstation" ? "is-on" : ""} onClick={() => setMode("workstation")}>Review workstation</button>
+            </div>
+          )}
+          {view && runId && mode === "flow" && (
+            <FlowRunner
+              key={`flow-${runId}`}
+              view={view}
+              processMs={intervalMs != null ? intervalMs / 2 : undefined}
+              dwellMs={intervalMs}
+              patchUrl={(pid) => source!.patchUrl(view.caseId, pid)}
+              onDecide={source?.live ? (a, s) => source.decide(runId, a, s) : undefined}
+              onStatus={(status) => setStates((s) => ({ ...s, [view.caseId]: { ...s[view.caseId], status } }))}
+              onWorkstation={() => setMode("workstation")}
+            />
+          )}
+          {view && runId && mode === "workstation" && (
             <CaseWorkspace
               key={runId}
               view={view}

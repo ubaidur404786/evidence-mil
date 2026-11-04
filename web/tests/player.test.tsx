@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { App } from "../src/App";
 import type { Source } from "../src/api";
 import { CaseWorkspace } from "../src/components/CaseWorkspace";
+import { FlowRunner } from "../src/components/FlowRunner";
 import { Decomposition, LocalisationCard, WhatIf } from "../src/components/EvidencePanels";
 import { ReportPanel } from "../src/components/ReportPanel";
 import { deriveView } from "../src/lib/derive";
@@ -60,6 +61,46 @@ describe("CaseWorkspace pipeline", () => {
     fireEvent.click(screen.getByAltText("patch 1"));
     expect(screen.getByTestId("patch-inspector")).toHaveTextContent("Patch 1");
     expect(screen.getByTestId("patch-inspector")).toHaveTextContent("+1.200");
+  });
+});
+
+describe("FlowRunner", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it("processes, pops up each stage, docks it on Next, then finishes", () => {
+    render(<FlowRunner view={view()} processMs={100} dwellMs={1000} patchUrl={noUrl} />);
+    expect(screen.getByTestId("processing")).toBeInTheDocument();
+    const keys = ["input", "tile", "encode", "score", "aggregate", "explain", "report"];
+    keys.forEach((k) => {
+      act(() => vi.advanceTimersByTime(100));
+      expect(screen.getByTestId(`pop-${k}`)).toBeInTheDocument();
+      fireEvent.click(screen.getByTestId("pop-next"));
+      act(() => vi.advanceTimersByTime(400));
+      expect(screen.queryByTestId(`pop-${k}`)).toBeNull();
+    });
+    expect(screen.getByTestId("flow-done")).toHaveTextContent("66.0%");
+  });
+
+  it("shows patches, instance scores and the additive sum", () => {
+    render(<FlowRunner view={view()} processMs={10} dwellMs={1000} patchUrl={noUrl} />);
+    const step = () => { fireEvent.click(screen.getByTestId("pop-next")); act(() => vi.advanceTimersByTime(400)); };
+    act(() => vi.advanceTimersByTime(10));
+    step();
+    act(() => vi.advanceTimersByTime(10));
+    expect(screen.getByTestId("patch-scroll").querySelectorAll("figure").length).toBe(view().tile.coords.length);
+    step(); act(() => vi.advanceTimersByTime(10));
+    step(); act(() => vi.advanceTimersByTime(10));
+    expect(screen.getByTestId("instances").firstElementChild).toHaveTextContent("Patch #1");
+    step(); act(() => vi.advanceTimersByTime(10));
+    expect(screen.getByTestId("flow-logit")).toHaveTextContent("+0.650");
+  });
+
+  it("auto runs to the end", () => {
+    render(<FlowRunner view={view()} processMs={10} dwellMs={50} patchUrl={noUrl} />);
+    fireEvent.click(screen.getByTestId("flow-auto"));
+    for (let i = 0; i < 40; i++) act(() => vi.advanceTimersByTime(100));
+    expect(screen.getByTestId("flow-done")).toBeInTheDocument();
   });
 });
 
@@ -125,8 +166,10 @@ describe("App", () => {
   it("lists cases, runs one and records it in the worklist", async () => {
     render(<App source={source(false)} intervalMs={50} />);
     fireEvent.click(await screen.findByText("t-1"));
+    expect(await screen.findByTestId("flow")).toBeInTheDocument();
+    expect((await screen.findAllByText("66%")).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("tab", { name: "Review workstation" }));
     expect(await screen.findByTestId("step-input")).toBeInTheDocument();
-    expect(await screen.findByText("66%")).toBeInTheDocument();
     expect(screen.queryByTestId("upload-open")).toBeNull(); // replay mode: no uploads
   });
 
