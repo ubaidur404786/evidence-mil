@@ -150,7 +150,8 @@ def test_worklist_and_packs(client):
     items = {i["case_id"]: i for i in client.get("/worklist").json()}
     assert items["toy-02"]["run_id"] == run_id and 0 <= items["toy-02"]["probability"] <= 1
     assert client.get("/packs").json()[0] == {"name": "toy", "title": "toy", "upload": True,
-                                              "patch_px": 16, "tile_um": None}
+                                              "patch_px": 16, "tile_um": None, "encoder": "fake",
+                                              "encoder_ready": True}
 
 
 def test_packs_without_a_trained_head_are_skipped(tmp_path, monkeypatch):
