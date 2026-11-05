@@ -9,9 +9,10 @@ these patches were absent?"), and sign off a report whose every number has been 
 > Decision support for demonstration, not a medical device.
 
 ## Demo video
-[![EvidenceMIL pipeline demo: click to watch the full video with captions](docs/media/evidence_mil_demo.gif)](docs/media/evidence_mil_demo.mp4)
 
-**[▶ Watch the full 87-second video with captions (MP4)](docs/media/evidence_mil_demo.mp4)**. A real CAMELYON16 slide goes
+https://github.com/user-attachments/assets/f4080be7-0025-4d7d-80d9-3bcc8c9a3f8b
+
+A real CAMELYON16 slide goes
 through all seven stages: input → patches → embeddings → patch scores → slide score → explanation → verified report.
 Each stage computes, opens to show what it did with the real numbers, then docks back into the pipeline, where **+** reopens it.
 
