@@ -25,7 +25,6 @@ EvidenceMIL learns from the slide label alone ("this slide has tumour") and stil
 heatmap that is the score itself, not an after-the-fact guess.
 
 ## How it works
-![architecture](docs/architecture.svg)
 
 | step | what happens | what the reviewer sees |
 |---|---|---|
