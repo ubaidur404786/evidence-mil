@@ -83,6 +83,7 @@ export function SlideViewer(props: ViewerProps) {
     // Markers are sized in screen pixels (k = canvas px per screen px), so they stay small on big tiles.
     const k = fit ? w / fit.width : 1;
     const ring = Math.max(Math.min(cw, ch) * 0.62, 9 * k);
+    const labels: [number, number][] = [];
     highlight.forEach((pid, rank) => {
       if (hidden?.has(pid) || !coords[pid]) return;
       const [r, c] = coords[pid];
@@ -102,6 +103,9 @@ export function SlideViewer(props: ViewerProps) {
       ctx.font = `700 ${fs}px system-ui`;
       const bx = cx + ring * 0.7;
       const by = cy - ring * 0.7 - fs;
+      // Neighbouring top patches: keep every ring, but skip a rank label that would sit on another label.
+      if (labels.some(([x, y]) => Math.abs(x - bx) < fs * 1.3 && Math.abs(y - by) < fs * 1.4)) return;
+      labels.push([bx, by]);
       ctx.fillStyle = "rgba(0,0,0,0.8)";
       ctx.fillRect(bx, by, fs * 1.1, fs * 1.25);
       ctx.fillStyle = "#fff";

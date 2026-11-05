@@ -432,7 +432,7 @@ export function ScoreStage({ view }: { view: CaseView }) {
             return (
               <li key={`${order}-${pid}`} style={{ animationDelay: `${ZOOM_IN_S + Math.min(i, 24) * 0.04}s` }}>
                 <span className="inst__rank">{i + 1}</span>
-                <Crop view={view} pid={pid} size={40} />
+                <Crop view={view} pid={pid} size={32} />
                 <span className="inst__id">Patch #{pid}</span>
                 <span className="inst__bar"><i className={c >= 0 ? "up" : "down"} style={{ width: `${width}%`, animationDelay: `${ZOOM_IN_S + 0.2 + Math.min(i, 24) * 0.04}s` }} /></span>
                 <span className={`inst__val ${c >= 0 ? "tone-pos" : "tone-neg"}`}>{signed(c)}</span>
@@ -613,7 +613,7 @@ export function ExplainStage({ view }: { view: CaseView }) {
         <div className="top-row">
           {top.map((pid, i) => (
             <figure key={pid} className="lens" style={{ animationDelay: `${ZOOM_IN_S + 0.8 + i * 0.12}s` }}>
-              <Crop view={view} pid={pid} size={78} />
+              <Crop view={view} pid={pid} size={58} />
               <figcaption><b>#{i + 1}</b> <span className="tone-pos">{signed(byId.get(pid)?.contribution ?? 0, 2)}</span></figcaption>
             </figure>
           ))}
@@ -625,13 +625,13 @@ export function ExplainStage({ view }: { view: CaseView }) {
             <path d={path} pathLength={1} />
           </svg>
           <p className="muted small">{pct(curve[0]?.probability ?? 0, 0)} with all patches → {pct(curve[curve.length - 1]?.probability ?? 0, 0)} after
-            removing the top {maxR}. {(curve[curve.length - 1]?.probability ?? 0) > 0.9 ? "Strong slide: many patches carry tumour evidence." : ""}</p>
+            removing the top {maxR}{(curve[curve.length - 1]?.probability ?? 0) > 0.9 ? ": many patches carry tumour evidence" : ""}.</p>
         </div>
         {loc && (
           <div className="stats stats--row" data-testid="flow-localisation">
-            <Stat k="Top-5 inside outline" v={pct(loc.precision_at_5, 0)} tone="tone-accent" />
+            <Stat k="Top-5 in outline" v={pct(loc.precision_at_5, 0)} tone="tone-accent" />
             <Stat k="By chance" v={pct(loc.chance, 0)} />
-            <Stat k="Patch AUROC" v={loc.auroc.toFixed(3)} />
+            <Stat k="AUROC" v={loc.auroc.toFixed(3)} />
           </div>
         )}
       </div>
@@ -656,7 +656,7 @@ export function ReportStage({ view, onDecide, onStatus }: {
     [view.aggregate.abstain ? "Uncertain: abstained, referred to specialist" : "Outside the uncertainty band", true],
   ];
   return (
-    <div className="stage-split">
+    <div className="stage-split stage-split--report">
       <div className="stage-col">
         <ol className="checks">
           {checks.map(([label, pass], i) => (

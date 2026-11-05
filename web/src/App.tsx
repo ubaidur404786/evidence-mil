@@ -61,6 +61,14 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
     open(c.case_id);
   }
 
+  const modebar = (
+    <div className="modebar" role="tablist" aria-label="view">
+      <button role="tab" aria-selected={mode === "flow"} className={mode === "flow" ? "is-on" : ""} onClick={() => setMode("flow")}>Pipeline flow</button>
+      <button role="tab" aria-selected={mode === "workstation"} className={mode === "workstation" ? "is-on" : ""} onClick={() => setMode("workstation")}>Review workstation</button>
+      <button className={`modebar__focus${focus ? " is-on" : ""}`} onClick={() => setFocus((f) => !f)} title={focus ? "Show the worklist" : "Hide the worklist"} aria-label="toggle worklist">{focus ? "⇥" : "⇤"}</button>
+    </div>
+  );
+
   const canUpload = Boolean(source?.live && source.upload && packs.some((p) => p.upload));
 
   return (
@@ -108,21 +116,24 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
             );
           })()}
           {!caseId && !error && (
-            <div className="empty">
-              <h2>Select a case from the worklist</h2>
-              <p className="muted">The pipeline replays step by step: tiling, encoding, the additive model's score, the exact
-                patch contributions behind it, and a verified report for sign-off.</p>
-              {!source?.live && <p className="muted small">Public demo: recorded runs. Run the API locally for live analysis and uploads.</p>}
+            <div className="welcome hud-panel" data-testid="welcome">
+              <p className="eyebrow">Explainable slide review</p>
+              <h2>See which patches decided the prediction</h2>
+              <p className="muted">A whole-slide image becomes a bag of patches. A frozen pathology model encodes them, an additive
+                model scores each one, and the slide score is exactly their sum, so the heatmap is the evidence itself.</p>
+              <ol className="welcome__flow">
+                {["Input", "Patches", "Embeddings", "Patch scores", "Slide score", "Explanation", "Report"].map((t, i) => (
+                  <li key={t}><span>{String(i + 1).padStart(2, "0")}</span>{t}</li>
+                ))}
+              </ol>
+              <div className="welcome__actions">
+                {cases[0] && <button className="cta" onClick={() => open(cases[0].case_id)}>▶ Start with a real slide</button>}
+                <button className="ghost" onClick={() => (canUpload ? setUploading(true) : setPage("local"))}>⇪ Analyse your own image</button>
+              </div>
+              <p className="muted small">{source?.live ? "Live API: runs are computed on this machine." : "Public demo: recorded runs on real CAMELYON16 slides. Uploads run locally."}</p>
             </div>
           )}
           {loading && source && <RunProgress source={source} item={cases.find((c) => c.case_id === caseId)} />}
-          {view && runId && (
-            <div className="modebar" role="tablist" aria-label="view">
-              <button role="tab" aria-selected={mode === "flow"} className={mode === "flow" ? "is-on" : ""} onClick={() => setMode("flow")}>Pipeline flow</button>
-              <button role="tab" aria-selected={mode === "workstation"} className={mode === "workstation" ? "is-on" : ""} onClick={() => setMode("workstation")}>Review workstation</button>
-              <button className={focus ? "is-on" : ""} onClick={() => setFocus((f) => !f)} title="Hide the worklist">{focus ? "⇥ Show worklist" : "⇤ Focus"}</button>
-            </div>
-          )}
           {view && runId && mode === "flow" && (
             <FlowRunner
               key={`flow-${runId}`}
@@ -133,8 +144,10 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
               onDecide={source?.live ? (a, s) => source.decide(runId, a, s) : undefined}
               onStatus={(status) => setStates((s) => ({ ...s, [view.caseId]: { ...s[view.caseId], status } }))}
               onWorkstation={() => setMode("workstation")}
+              toolbar={modebar}
             />
           )}
+          {view && runId && mode === "workstation" && modebar}
           {view && runId && mode === "workstation" && (
             <CaseWorkspace
               key={runId}

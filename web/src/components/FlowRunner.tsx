@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { pct, signed, verdict } from "../lib/derive";
 import type { CaseView, Report } from "../types";
 import { reducedMotion, useClock } from "./flow/anim";
@@ -42,9 +42,10 @@ interface Props {
   onDecide?: (action: "approve" | "edit", sections?: Report["sections"]) => Promise<Report>;
   onStatus?: (status: Report["status"]) => void;
   onWorkstation?: () => void;
+  toolbar?: ReactNode; // view switcher, shown in the header row to save vertical space
 }
 
-export function FlowRunner({ view, processMs = 2200, dwellMs = 9000, patchUrl, onDecide, onStatus, onWorkstation }: Props) {
+export function FlowRunner({ view, processMs = 2200, dwellMs = 9000, patchUrl, onDecide, onStatus, onWorkstation, toolbar }: Props) {
   const [reached, setReached] = useState(0);
   const [busy, setBusy] = useState(true);
   const [open, setOpen] = useState<number | null>(null);
@@ -141,11 +142,11 @@ export function FlowRunner({ view, processMs = 2200, dwellMs = 9000, patchUrl, o
           <h2>{view.input.title || view.caseId}</h2>
         </div>
         <div className="pf__actions">
+          {toolbar}
           <button className="ghost" onClick={restart} data-testid="flow-restart">↺ Restart</button>
           <button className={auto ? "" : "ghost"} onClick={() => setAuto((a) => !a)} data-testid="flow-auto">
             {auto ? "❚❚ Pause" : "▶ Auto run"}
           </button>
-          {onWorkstation && <button className="ghost" onClick={onWorkstation}>Workstation →</button>}
         </div>
       </div>
 
