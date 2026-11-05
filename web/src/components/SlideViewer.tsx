@@ -31,7 +31,7 @@ function colour(layer: Layer, v: number, scale: number): string | null {
   if (layer === "contribution") {
     const a = Math.min(Math.abs(v) / scale, 1);
     if (a < 0.02) return null;
-    return `rgba(${(v >= 0 ? WARM : COOL).join(",")},${0.12 + a * 0.78})`;
+    return `rgba(${(v >= 0 ? WARM : COOL).join(",")},${0.1 + a * 0.55})`; // keep the tissue visible under the map
   }
   return null;
 }
@@ -80,37 +80,40 @@ export function SlideViewer(props: ViewerProps) {
       }
     });
     // Top patches: a white ring with a dark edge and a rank number, sized to stay readable when zoomed out.
-    const ring = Math.max(cw, ch, w / 120);
+    // Markers are sized in screen pixels (k = canvas px per screen px), so they stay small on big tiles.
+    const k = fit ? w / fit.width : 1;
+    const ring = Math.max(Math.min(cw, ch) * 0.62, 9 * k);
     highlight.forEach((pid, rank) => {
       if (hidden?.has(pid) || !coords[pid]) return;
       const [r, c] = coords[pid];
       const cx = c * cw + cw / 2;
       const cy = r * ch + ch / 2;
-      const rad = ring * 0.85;
-      ctx.lineWidth = Math.max(1.5, ring * 0.12);
+      ctx.lineWidth = 2.2 * k;
       ctx.strokeStyle = "rgba(255,255,255,0.95)";
       ctx.beginPath();
-      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+      ctx.arc(cx, cy, ring, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.lineWidth = Math.max(0.75, ring * 0.05);
-      ctx.strokeStyle = "rgba(0,0,0,0.85)";
+      ctx.lineWidth = 1 * k;
+      ctx.strokeStyle = "rgba(0,0,0,0.8)";
       ctx.beginPath();
-      ctx.arc(cx, cy, rad + ring * 0.09, 0, Math.PI * 2);
+      ctx.arc(cx, cy, ring + 1.6 * k, 0, Math.PI * 2);
       ctx.stroke();
-      const fs = Math.max(9, ring * 0.7);
-      ctx.font = `600 ${fs}px system-ui`;
-      ctx.fillStyle = "rgba(0,0,0,0.75)";
-      ctx.fillRect(cx + rad * 0.7, cy - rad - fs * 0.9, fs * 0.9, fs * 1.05);
+      const fs = 11 * k;
+      ctx.font = `700 ${fs}px system-ui`;
+      const bx = cx + ring * 0.7;
+      const by = cy - ring * 0.7 - fs;
+      ctx.fillStyle = "rgba(0,0,0,0.8)";
+      ctx.fillRect(bx, by, fs * 1.1, fs * 1.25);
       ctx.fillStyle = "#fff";
-      ctx.fillText(String(rank + 1), cx + rad * 0.7 + fs * 0.2, cy - rad);
+      ctx.fillText(String(rank + 1), bx + fs * 0.27, by + fs * 1.0);
     });
     if (selected != null && coords[selected]) {
       const [r, c] = coords[selected];
       ctx.strokeStyle = "#00e5ff";
-      ctx.lineWidth = Math.max(1.5, ring * 0.2);
+      ctx.lineWidth = 2 * (fit ? w / fit.width : 1);
       ctx.strokeRect(c * cw, r * ch, cw, ch);
     }
-  }, [coords, layer, values, highlight, hidden, selected, w, h, cw, ch]);
+  }, [coords, layer, values, highlight, hidden, selected, w, h, cw, ch, fit]);
 
   // Fit the image inside the viewer box while keeping its aspect ratio (image and canvas share this box).
   useEffect(() => {
