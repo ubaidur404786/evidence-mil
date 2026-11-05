@@ -31,3 +31,7 @@ results/raw/
 .DS_Store
 web/test-results/
 web/playwright-report/
+
+# local Docker mounts (trained head, sample cases)
+models/
+samples/

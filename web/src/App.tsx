@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { pickSource, type Source } from "./api";
 import { CaseWorkspace } from "./components/CaseWorkspace";
 import { FlowRunner } from "./components/FlowRunner";
-import { Compare, HowItWorks } from "./components/InfoPages";
+import { Compare, HowItWorks, RunLocally } from "./components/InfoPages";
 import { UploadDialog } from "./components/UploadDialog";
 import { Worklist, type CaseState } from "./components/Worklist";
 import { deriveView } from "./lib/derive";
@@ -19,7 +19,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [uploading, setUploading] = useState(false);
-  const [page, setPage] = useState<"review" | "how" | "compare">("review");
+  const [page, setPage] = useState<"review" | "how" | "compare" | "local">("review");
   const [mode, setMode] = useState<"flow" | "workstation">("flow");
   const [focus, setFocus] = useState(false);
 
@@ -79,12 +79,19 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
         </nav>
         <div className="topbar__right">
           {source && <span className={`chip ${source.live ? "chip--live" : ""}`}>{source.live ? "Live API" : "Replay · recorded runs"}</span>}
-          {canUpload && <button onClick={() => setUploading(true)} data-testid="upload-open">Upload image</button>}
+          {canUpload
+            ? <button onClick={() => setUploading(true)} data-testid="upload-open">⇪ Upload image</button>
+            : source && <button onClick={() => setPage("local")} data-testid="upload-guide">⇪ Upload image</button>}
         </div>
       </header>
 
-      {page === "how" && <HowItWorks />}
-      {page === "compare" && <Compare />}
+      {page !== "review" && (
+        <div className="pagescroll">
+          {page === "how" && <HowItWorks />}
+          {page === "compare" && <Compare />}
+          {page === "local" && <RunLocally />}
+        </div>
+      )}
       <div className={`layout${focus ? " is-focus" : ""}`} hidden={page !== "review"}>
         <Worklist cases={cases} states={states} current={caseId} onOpen={open} />
         <main className="main">

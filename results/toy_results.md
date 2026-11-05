@@ -5,7 +5,7 @@ Localisation = share of positive bags whose top-1 patch is a true pattern patch.
 
 | head | AUROC | AUPRC | ECE | loc@1 | loc@1 chance |
 |---|---|---|---|---|---|
-| mean | 0.957 | 0.968 | 0.175 | 1.00 | 0.04 |
+| mean | 0.953 | 0.965 | 0.131 | 1.00 | 0.04 |
 | abmil | 1.000 | 1.000 | 0.000 | 1.00 | 0.04 |
 | additive | 1.000 | 1.000 | 0.000 | 1.00 | 0.04 |
 

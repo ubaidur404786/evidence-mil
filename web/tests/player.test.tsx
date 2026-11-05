@@ -170,7 +170,9 @@ describe("App", () => {
     expect((await screen.findAllByText("66%")).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole("tab", { name: "Review workstation" }));
     expect(await screen.findByTestId("step-input")).toBeInTheDocument();
-    expect(screen.queryByTestId("upload-open")).toBeNull(); // replay mode: no uploads
+    expect(screen.queryByTestId("upload-open")).toBeNull(); // replay mode: no uploads, a guide instead
+    fireEvent.click(screen.getByTestId("upload-guide"));
+    expect(screen.getByTestId("run-locally")).toHaveTextContent("docker compose pull");
   });
 
   it("uploads in live mode and opens the new case", async () => {

@@ -1,20 +1,26 @@
-# docker compose up --build   → dashboard on http://localhost:8080
+# Prebuilt images:  docker compose pull && docker compose up -d   → dashboard on http://localhost:8080
+# From source:      docker compose up --build
+# CAMELYON16 pack: put the trained head in ./models/c16 (docs/RUN_LOCALLY.md); optional sample cases in ./samples/c16
 # docker compose --profile llm up --build   → also starts a local Ollama for the agent
 services:
   api:
+    image: ghcr.io/ubaidur404786/evidence-mil-api:latest
     build: { context: ., dockerfile: deploy/docker/api.Dockerfile }
     environment:
       EVIDENCE_LLM: ${EVIDENCE_LLM:-template}
       EVIDENCE_LLM_URL: ${EVIDENCE_LLM_URL:-http://llm:11434/v1}
       EVIDENCE_LLM_MODEL: ${EVIDENCE_LLM_MODEL:-llama3.2}
     volumes:
-      - state:/app/state          # SQLite run store, audit log, agent checkpoints
+      - state:/app/state          # SQLite run store, audit log, agent checkpoints, uploads, Phikon cache
+      - ./models/c16:/app/models/c16:ro
+      - ./samples/c16:/app/samples/c16:ro
     ports: ["8000:8000"]
     read_only: true
     tmpfs: [/tmp]
     restart: unless-stopped
 
   web:
+    image: ghcr.io/ubaidur404786/evidence-mil-web:latest
     build: { context: ., dockerfile: deploy/docker/web.Dockerfile }
     depends_on:
       api: { condition: service_healthy }

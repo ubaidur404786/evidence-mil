@@ -28,6 +28,7 @@ class Pack:
     patch_px: int = 224  # upload tile size in image pixels (224 px at 20x for c16)
     min_tissue: float = 0.5  # drop upload tiles with less tissue than this (0 = keep all)
     tile_um: float | None = None
+    uploads: str | None = None  # where uploads go (default: <cases_dir>/uploads); lets cases_dir be read-only
     _model: CaseModel | None = field(default=None, repr=False)
     _encoder: object | None = field(default=None, repr=False)
 
@@ -37,7 +38,7 @@ class Pack:
 
     @property
     def uploads_dir(self) -> Path:
-        return self.cases_dir / "uploads"
+        return Path(self.uploads) if self.uploads else self.cases_dir / "uploads"
 
     def model(self) -> CaseModel:
         if self._model is None:
@@ -60,7 +61,8 @@ def packs_from_env() -> list[Pack]:
     raw = os.environ.get("EVIDENCE_PACKS")
     if raw:
         spec = json.loads(Path(raw).read_text() if not raw.lstrip().startswith("[") else raw)
-        return [Pack(**p) for p in spec]
+        # A pack whose trained head is not present (e.g. the c16 head not mounted into Docker) is skipped.
+        return [Pack(**p) for p in spec if (Path(p["model_dir"]) / "spec.json").exists()]
     return [Pack("toy", os.environ.get("EVIDENCE_CASES_DIR", "data/demo_cases"),
                  os.environ.get("EVIDENCE_MODEL_DIR", "data/model"), title="Synthetic toy",
                  live_encoder="fake", encoder_kwargs={"dim": 32}, patch_px=16, min_tissue=0)]

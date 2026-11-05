@@ -1,0 +1,8 @@
+[
+ {"name": "c16", "title": "Lymph node metastasis (CAMELYON16)", "cases_dir": "/app/samples/c16",
+  "model_dir": "/app/models/c16", "uploads": "/app/state/uploads/c16", "live_encoder": "phikon",
+  "patch_px": 224, "min_tissue": 0.5, "tile_um": 112},
+ {"name": "toy", "title": "Synthetic toy (simple demo)", "cases_dir": "/app/data/demo_cases",
+  "model_dir": "/app/data/model", "uploads": "/app/state/uploads/toy", "live_encoder": "fake",
+  "encoder_kwargs": {"dim": 32}, "patch_px": 16, "min_tissue": 0}
+]

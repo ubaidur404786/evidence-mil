@@ -12,7 +12,8 @@ COPY contracts contracts
 COPY ml ml
 COPY agent agent
 COPY api api
-RUN uv pip install --no-sources ./contracts ./ml ./agent ./api
+# phikon extra: live encoding of CAMELYON16 uploads (weights download from Hugging Face on first use)
+RUN uv pip install --no-sources ./contracts "./ml[phikon]" ./agent ./api
 # Demo assets are generated, never committed (ADR-003): toy model + cached-embedding cases.
 COPY scripts/build_demo.py scripts/build_demo.py
 RUN mkdir -p results web/public/replay && python scripts/build_demo.py > /dev/null

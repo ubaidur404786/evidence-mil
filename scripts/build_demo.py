@@ -27,6 +27,9 @@ ROOT = Path(__file__).parents[1]
 def record_replays(packs: list[dict], out: Path) -> None:
     """Run every case of every pack once (template report) and save the events for replay mode."""
     out.mkdir(parents=True, exist_ok=True)
+    for old in out.glob("*.json"):
+        if old.name != "comparison.json":
+            old.unlink()
     agent = ReviewAgent()
     index = []
     for pack in packs:
@@ -36,6 +39,12 @@ def record_replays(packs: list[dict], out: Path) -> None:
             cid = meta["case_id"]
             events = [e.model_dump(mode="json") for e in run_case(
                 load_bundle(cases_dir, cid), model, report_fn=lambda ev, cid=cid: agent.start(ev, cid))]
+            agg = next(e for e in events if e["step"] == "aggregate")["payload"]
+            label = meta.get("label")
+            # Showcase only confident, correct cases (abstentions and errors are reported in results/, not replayed).
+            if label is not None and (agg["abstain"] or (agg["probability"] >= 0.5) != bool(label)):
+                print(f"  not showcased: {cid} (p={agg['probability']:.2f}, abstain={agg['abstain']})")
+                continue
             (out / f"{cid}.json").write_text(json.dumps(events))
             index.append({"pack": pack["name"], "domain": pack["title"],
                           **{k: meta.get(k) for k in ("case_id", "title", "label", "n_patches", "source",
@@ -56,10 +65,10 @@ def main() -> None:
     cases_dir = ROOT / "data/demo_cases"
     make_toy_bundles(ROOT / "data/model", cases_dir, n=6)
 
-    packs = [{"name": "toy", "title": "Synthetic toy", "cases_dir": "data/demo_cases", "model_dir": "data/model",
+    packs = [{"name": "toy", "title": "Synthetic toy (simple demo)", "cases_dir": "data/demo_cases", "model_dir": "data/model",
               "live_encoder": "fake", "encoder_kwargs": {"dim": 32}, "patch_px": 16, "min_tissue": 0}]
     if (ROOT / "data/demo_cases_c16").exists() and (ROOT / "results/raw/cache_phikon_additive").exists():
-        packs.append({"name": "c16", "title": "Lymph node metastasis (CAMELYON16)",
+        packs.insert(0, {"name": "c16", "title": "Lymph node metastasis (CAMELYON16)",
                       "cases_dir": "data/demo_cases_c16", "model_dir": "results/raw/cache_phikon_additive",
                       "live_encoder": "phikon", "patch_px": 224, "min_tissue": 0.5, "tile_um": 112})
     (ROOT / "data/packs.json").write_text(json.dumps(packs, indent=1))

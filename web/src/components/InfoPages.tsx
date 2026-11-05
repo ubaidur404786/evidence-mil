@@ -134,3 +134,70 @@ export function Compare() {
     </div>
   );
 }
+
+const REPO = "https://github.com/ubaidur404786/evidence-mil";
+const SAMPLES = `${REPO}/releases/tag/samples-v1`;
+
+function Cmd({ children }: { children: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div className="cmd">
+      <pre><code>{children}</code></pre>
+      <button className="ghost" onClick={() => { navigator.clipboard?.writeText(children); setCopied(true); }}>
+        {copied ? "Copied" : "Copy"}
+      </button>
+    </div>
+  );
+}
+
+/** Shown on the public (replay-only) demo when someone wants to analyse their own image. */
+export function RunLocally() {
+  return (
+    <div className="info" data-testid="run-locally">
+      <p className="eyebrow">Analyse your own image</p>
+      <h2>Uploads run on your machine</h2>
+      <p className="muted lead">This public page only replays recorded runs. To upload an image, run EvidenceMIL locally:
+        the same pipeline (tiles → Phikon embeddings → patch scores → slide score → explanation → report) then runs live
+        on your image. Nothing is sent to any server.</p>
+
+      <ol className="guide">
+        <li className="card">
+          <h3>1 · Start the app (Docker)</h3>
+          <p className="muted small">Needs Docker Desktop and git. Prebuilt images come from GitHub Container Registry.</p>
+          <Cmd>{`git clone ${REPO}.git
+cd evidence-mil
+docker compose pull
+docker compose up -d`}</Cmd>
+          <p className="small">Open <b>http://localhost:8080</b>. The synthetic demo pack works right away, including uploads.</p>
+        </li>
+        <li className="card">
+          <h3>2 · Enable the CAMELYON16 pack (one time, ~30–60 min on CPU)</h3>
+          <p className="muted small">Needs <a href="https://docs.astral.sh/uv/" target="_blank" rel="noreferrer">uv</a>. Downloads Owkin's
+            Phikon features (1.2 GB, non-commercial licence) and trains the small additive head on the CAMELYON16 training slides.</p>
+          <Cmd>{`uv sync --all-packages
+uv run --with huggingface_hub hf download owkin/camelyon16-features --repo-type dataset --include "data/*" --local-dir data/owkin_c16
+uv run python scripts/build_cache.py --owkin data/owkin_c16/data --out data/cache_phikon
+uv run python scripts/train_real.py --config ml/configs/camelyon16_phikon_additive.yaml --seeds 0`}</Cmd>
+          <p className="muted small">Copy the trained head where Docker mounts it, then restart the API:</p>
+          <Cmd>{`# PowerShell
+New-Item -ItemType Directory -Force models/c16 | Out-Null
+Copy-Item results/raw/cache_phikon_additive/* models/c16/
+docker compose restart api
+
+# macOS / Linux
+mkdir -p models/c16 && cp results/raw/cache_phikon_additive/* models/c16/ && docker compose restart api`}</Cmd>
+        </li>
+        <li className="card">
+          <h3>3 · Upload an image</h3>
+          <p className="small">Click <b>Upload image</b>, choose the <b>CAMELYON16</b> pack and drop an H&amp;E region at 20× (0.5 µm/px),
+            PNG or JPEG, up to 8192 px a side. Ready-made samples (CC0 crops around annotated tumour):{" "}
+            <a href={SAMPLES} target="_blank" rel="noreferrer">download sample images</a>.</p>
+          <p className="muted small">The first upload downloads and loads Phikon (1–2 min); a 100-patch image then takes about
+            10–30 s on CPU, a few seconds on a GPU. You then get the same step-by-step pipeline as the demo cases.</p>
+        </li>
+      </ol>
+      <p className="muted small">Without Docker: see <a href={`${REPO}/blob/main/docs/RUN_LOCALLY.md`} target="_blank" rel="noreferrer">docs/RUN_LOCALLY.md</a>.
+        Decision support for demonstration, not a medical device.</p>
+    </div>
+  );
+}

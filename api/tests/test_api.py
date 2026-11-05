@@ -151,3 +151,19 @@ def test_worklist_and_packs(client):
     assert items["toy-02"]["run_id"] == run_id and 0 <= items["toy-02"]["probability"] <= 1
     assert client.get("/packs").json()[0] == {"name": "toy", "title": "toy", "upload": True,
                                               "patch_px": 16, "tile_um": None}
+
+
+def test_packs_without_a_trained_head_are_skipped(tmp_path, monkeypatch):
+    import json
+
+    from evidence_api.packs import packs_from_env
+
+    (tmp_path / "m").mkdir()
+    (tmp_path / "m" / "spec.json").write_text("{}")
+    spec = [{"name": "ok", "cases_dir": str(tmp_path / "c"), "model_dir": str(tmp_path / "m"),
+             "uploads": str(tmp_path / "u")},
+            {"name": "missing", "cases_dir": str(tmp_path / "c"), "model_dir": str(tmp_path / "nope")}]
+    monkeypatch.setenv("EVIDENCE_PACKS", json.dumps(spec))
+    packs = packs_from_env()
+    assert [p.name for p in packs] == ["ok"]
+    assert packs[0].uploads_dir == tmp_path / "u"
