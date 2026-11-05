@@ -17,11 +17,12 @@ function bucket(s?: CaseState): (typeof FILTERS)[number] {
   return "to review";
 }
 
-export function Worklist({ cases, states, current, onOpen }: {
+export function Worklist({ cases, states, current, onOpen, onHide }: {
   cases: CaseSummary[];
   states: Record<string, CaseState>;
   current?: string;
   onOpen: (id: string) => void;
+  onHide?: () => void;
 }) {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
   const [query, setQuery] = useState("");
@@ -45,6 +46,7 @@ export function Worklist({ cases, states, current, onOpen }: {
       <div className="worklist__head">
         <h2>Worklist</h2>
         <span className="muted small">{cases.length} cases</span>
+        {onHide && <button className="icon worklist__hide" onClick={onHide} aria-label="hide worklist" title="Hide the worklist">«</button>}
       </div>
       <input className="search" placeholder="Search cases" value={query} onChange={(e) => setQuery(e.target.value)} />
       <div className="filters" role="tablist">

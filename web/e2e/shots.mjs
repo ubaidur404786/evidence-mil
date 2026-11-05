@@ -8,7 +8,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
 await page.goto("http://localhost:4317/?replay");
 await page.getByRole("button", { name: new RegExp(caseId) }).click();
-await page.getByRole("button", { name: /Focus/ }).click();
+await page.getByRole("button", { name: "hide worklist" }).click();
 let k = 0;
 for (const stage of ["input", "tile", "encode", "score", "aggregate", "explain", "report"]) {
   k++;

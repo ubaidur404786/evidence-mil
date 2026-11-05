@@ -65,7 +65,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
     <div className="modebar" role="tablist" aria-label="view">
       <button role="tab" aria-selected={mode === "flow"} className={mode === "flow" ? "is-on" : ""} onClick={() => setMode("flow")}>Pipeline flow</button>
       <button role="tab" aria-selected={mode === "workstation"} className={mode === "workstation" ? "is-on" : ""} onClick={() => setMode("workstation")}>Review workstation</button>
-      <button className={`modebar__focus${focus ? " is-on" : ""}`} onClick={() => setFocus((f) => !f)} title={focus ? "Show the worklist" : "Hide the worklist"} aria-label="toggle worklist">{focus ? "⇥" : "⇤"}</button>
+      <button className={`modebar__focus${focus ? " is-on" : ""}`} onClick={() => setFocus((f) => !f)} title={focus ? "Show the worklist" : "Hide the worklist"} aria-label="toggle worklist">{focus ? "Show cases" : "Hide cases"}</button>
     </div>
   );
 
@@ -102,7 +102,9 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
         </div>
       )}
       <div className={`layout${focus ? " is-focus" : ""}`} hidden={page !== "review"}>
-        <Worklist cases={cases} states={states} current={caseId} onOpen={open} />
+        {focus
+          ? <button className="worklist-tab" onClick={() => setFocus(false)} aria-label="show worklist" title="Show the worklist">» <span>Cases</span></button>
+          : <Worklist cases={cases} states={states} current={caseId} onOpen={open} onHide={() => setFocus(true)} />}
         <main className="main">
           {error && (() => {
             const g = errorGuide(error);

@@ -629,3 +629,14 @@ button:not(.ghost):not(.icon):hover { box-shadow: var(--glow); }
 .stage-col > .more { padding: 4px; font-size: 12px; }
 .compare th, .compare td.num { text-align: center; }
 .compare th:first-child { text-align: left; }
+
+/* collapsible worklist */
+.layout.is-focus { grid-template-columns: 34px minmax(0, 1fr); }
+.worklist__head { gap: 8px; }
+.worklist__head .muted { margin-left: auto; }
+.worklist__hide { padding: 0 8px; font-size: 15px; }
+.worklist-tab { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 0; border: 0; border-right: 1px solid var(--line);
+  border-radius: 0; background: var(--panel); color: var(--accent); font-size: 15px; }
+.worklist-tab span { writing-mode: vertical-rl; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+.worklist-tab:hover { background: rgba(34, 211, 238, 0.08); }
+@media (max-width: 900px) { .layout.is-focus { grid-template-columns: 1fr; } .worklist-tab { flex-direction: row; justify-content: center; } .worklist-tab span { writing-mode: horizontal-tb; } }
