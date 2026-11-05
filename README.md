@@ -8,11 +8,12 @@ these patches were absent?"), and sign off a report whose every number has been 
 
 > Decision support for demonstration, not a medical device.
 
-![pipeline flow: embeddings stage](docs/screens/3c-encode.png)
+## Demo video
+[![EvidenceMIL pipeline demo: click to watch the full video with captions](docs/media/evidence_mil_demo.gif)](docs/media/evidence_mil_demo.mp4)
 
-The dashboard plays the forward pass left to right: each stage computes, zooms out of its node, animates what it
-does with the real numbers (tiling, encoding, per-patch scores, the running sum of evidence, the heatmap, the
-verified report), then docks back into the pipeline, where **+** reopens it. More frames: `docs/screens/`.
+**[▶ Watch the full 87-second video with captions (MP4)](docs/media/evidence_mil_demo.mp4)**. A real CAMELYON16 slide goes
+through all seven stages: input → patches → embeddings → patch scores → slide score → explanation → verified report.
+Each stage computes, opens to show what it did with the real numbers, then docks back into the pipeline, where **+** reopens it.
 
 ## The problem
 A pathologist checking a lymph node for breast-cancer metastasis looks at a slide of about 100,000 × 200,000
@@ -72,8 +73,9 @@ uv run python scripts/build_demo.py      # toy model + demo cases + recorded run
 EVIDENCE_PACKS=data/packs.json uv run uvicorn evidence_api.main:app_factory --factory --port 8000
 cd web && npm ci && npm run dev          # http://localhost:5173 — Review, How it works, Compare methods
 ```
-Real slides and uploads (CAMELYON16 pack, GPU recommended): see [docs/RUNBOOK.md](docs/RUNBOOK.md) §1.
-No backend? `cd web && npm run build && npx vite preview`, open `/?replay`. Docker: `docker compose up --build`.
+Analyse your own image (Docker, uploads, CAMELYON16 pack): see [docs/RUN_LOCALLY.md](docs/RUN_LOCALLY.md).
+Rebuilding real slides from scratch (GPU): [docs/RUNBOOK.md](docs/RUNBOOK.md) §1.
+No backend? `cd web && npm run build && npx vite preview`, open `/?replay`. Docker: `docker compose pull && docker compose up -d` (http://localhost:8080).
 Tests: `uv run pytest contracts ml agent api` and `cd web && npm test && npx playwright test`.
 
 ## Engineering
