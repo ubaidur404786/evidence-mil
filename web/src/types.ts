@@ -44,6 +44,8 @@ export interface PackInfo {
   upload: boolean;
   patch_px: number;
   tile_um: number | null;
+  encoder?: string | null;
+  encoder_ready?: boolean;
 }
 
 export interface Localisation {

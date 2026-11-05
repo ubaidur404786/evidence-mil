@@ -184,3 +184,13 @@ describe("App", () => {
     expect(await screen.findByText("up-1")).toBeInTheDocument();
   });
 });
+
+describe("errorGuide", () => {
+  it("turns API errors into next steps", async () => {
+    const { errorGuide } = await import("../src/components/RunProgress");
+    expect(errorGuide("Failed to fetch").title).toMatch(/reach the API/);
+    expect(errorGuide("422: no tissue found").title).toMatch(/cannot be analysed/);
+    expect(errorGuide("500: OutOfMemoryError: CUDA out of memory").title).toMatch(/memory/);
+    expect(errorGuide("500: Internal Server Error").tips[0]).toMatch(/Retry/);
+  });
+});

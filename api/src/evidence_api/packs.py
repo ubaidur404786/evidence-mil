@@ -10,6 +10,7 @@ Configured with EVIDENCE_PACKS (a JSON list, or a path to a JSON file), e.g.
 
 import json
 import os
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -31,6 +32,7 @@ class Pack:
     uploads: str | None = None  # where uploads go (default: <cases_dir>/uploads); lets cases_dir be read-only
     _model: CaseModel | None = field(default=None, repr=False)
     _encoder: object | None = field(default=None, repr=False)
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def __post_init__(self) -> None:
         self.cases_dir, self.model_dir = Path(self.cases_dir), Path(self.model_dir)
@@ -48,13 +50,20 @@ class Pack:
     def encoder(self):
         if self.live_encoder is None:
             return None
-        if self._encoder is None:
-            self._encoder = build_encoder(self.live_encoder, **self.encoder_kwargs)
+        with self._lock:  # one load even when an upload warm-up and a run ask at the same time
+            if self._encoder is None:
+                self._encoder = build_encoder(self.live_encoder, **self.encoder_kwargs)
         return self._encoder
+
+    def warm_up(self) -> None:
+        """Start loading the live encoder in the background (the first Phikon load takes 1-2 min)."""
+        if self.live_encoder is not None and self._encoder is None:
+            threading.Thread(target=self.encoder, daemon=True).start()
 
     def public(self) -> dict:
         return {"name": self.name, "title": self.title, "upload": self.live_encoder is not None,
-                "patch_px": self.patch_px, "tile_um": self.tile_um}
+                "patch_px": self.patch_px, "tile_um": self.tile_um,
+                "encoder": self.live_encoder, "encoder_ready": self._encoder is not None}
 
 
 def packs_from_env() -> list[Pack]:

@@ -3,6 +3,7 @@ import { pickSource, type Source } from "./api";
 import { CaseWorkspace } from "./components/CaseWorkspace";
 import { FlowRunner } from "./components/FlowRunner";
 import { Compare, HowItWorks, RunLocally } from "./components/InfoPages";
+import { RunProgress, errorGuide } from "./components/RunProgress";
 import { UploadDialog } from "./components/UploadDialog";
 import { Worklist, type CaseState } from "./components/Worklist";
 import { deriveView } from "./lib/derive";
@@ -95,7 +96,17 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
       <div className={`layout${focus ? " is-focus" : ""}`} hidden={page !== "review"}>
         <Worklist cases={cases} states={states} current={caseId} onOpen={open} />
         <main className="main">
-          {error && <p className="banner bad">{error}</p>}
+          {error && (() => {
+            const g = errorGuide(error);
+            return (
+              <div className="errorcard hud-panel" role="alert" data-testid="error">
+                <h3>{g.title}</h3>
+                <ul>{g.tips.map((t) => <li key={t}>{t}</li>)}</ul>
+                <p className="muted small"><code>{error}</code></p>
+                {caseId && <button onClick={() => open(caseId)}>↻ Retry</button>}
+              </div>
+            );
+          })()}
           {!caseId && !error && (
             <div className="empty">
               <h2>Select a case from the worklist</h2>
@@ -104,7 +115,7 @@ export function App({ source: given, intervalMs }: { source?: Source; intervalMs
               {!source?.live && <p className="muted small">Public demo: recorded runs. Run the API locally for live analysis and uploads.</p>}
             </div>
           )}
-          {loading && <div className="processing" data-testid="loading"><span className="processing__ring" aria-hidden /><span>Running the model on this case… (first live run loads the encoder)</span></div>}
+          {loading && source && <RunProgress source={source} item={cases.find((c) => c.case_id === caseId)} />}
           {view && runId && (
             <div className="modebar" role="tablist" aria-label="view">
               <button role="tab" aria-selected={mode === "flow"} className={mode === "flow" ? "is-on" : ""} onClick={() => setMode("flow")}>Pipeline flow</button>

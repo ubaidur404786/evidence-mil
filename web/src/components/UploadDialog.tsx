@@ -1,5 +1,6 @@
 import { useState, type DragEvent } from "react";
 import type { CaseSummary, PackInfo } from "../types";
+import { errorGuide } from "./RunProgress";
 
 interface Props {
   packs: PackInfo[];
@@ -58,9 +59,15 @@ export function UploadDialog({ packs, onUpload, onDone, onClose }: Props) {
         </div>
         <p className="muted small">Processed on this server only; nothing is sent to third parties. Max 64 MB, 8192 px per side.
           Whole-slide files go through the offline extraction script.</p>
-        {error && <p className="bad">{error}</p>}
+        {error && (
+          <div className="errorcard" role="alert">
+            <h3>{errorGuide(error).title}</h3>
+            <ul>{errorGuide(error).tips.map((t) => <li key={t}>{t}</li>)}</ul>
+            <p className="muted small"><code>{error}</code></p>
+          </div>
+        )}
         <div className="actions">
-          <button onClick={submit} disabled={!file || busy}>{busy ? "Tiling and saving…" : "Upload and analyse"}</button>
+          <button onClick={submit} disabled={!file || busy}>{busy ? <><span className="btn-spin" aria-hidden /> Uploading and tiling…</> : "Upload and analyse"}</button>
           <button className="ghost" onClick={onClose}>Cancel</button>
         </div>
       </div>

@@ -10,17 +10,19 @@ them as SSE, paced by `delay_ms` so the dashboard can animate.
 
 import asyncio
 import json
+import logging
 import os
+import threading
 import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from pydantic import BaseModel
 
 from evidence_agent import ReviewAgent, build_llm
@@ -32,6 +34,7 @@ from evidencemil.pipeline import load_bundle, run_case
 from evidencemil.pipeline.bundle import list_bundles, patch_image
 
 MAX_UPLOAD_BYTES = 64 * 1024 * 1024
+log = logging.getLogger("evidence_api")
 
 
 @dataclass
@@ -91,6 +94,15 @@ def create_app(settings: Settings | None = None, agent: ReviewAgent | None = Non
     packs = {p.name: p for p in settings.packs}
 
     app = FastAPI(title="EvidenceMIL API", version="0.2.0")
+    run_lock = threading.Lock()  # one model run at a time: a single (small) GPU, and the agent's sqlite checkpointer
+
+    @app.exception_handler(Exception)
+    async def unexpected(request: Request, exc: Exception) -> JSONResponse:
+        # Keep the traceback in the server log; give the dashboard a message it can show.
+        log.exception("unhandled error on %s %s", request.method, request.url.path)
+        oom = "out of memory" in str(exc).lower()
+        hint = "GPU out of memory: close other GPU programs and retry." if oom else "See the API terminal for details."
+        return JSONResponse({"detail": f"{type(exc).__name__}: {exc}. {hint}"}, status_code=500)
     if settings.cors:
         app.add_middleware(CORSMiddleware, allow_origins=settings.cors, allow_methods=["*"],
                            allow_headers=["*"])
@@ -155,6 +167,7 @@ def create_app(settings: Settings | None = None, agent: ReviewAgent | None = Non
         except UploadError as exc:
             raise HTTPException(422, str(exc)) from exc
         await run_in_threadpool(save_upload, bundle, target)
+        target.warm_up()  # start loading the encoder now, so the run that follows waits less
         store.audit(None, "upload", {"case_id": bundle.case_id, "pack": pack,
                                      "filename": bundle.meta["title"], "patches": len(bundle.coords)})
         return summary(target, target.uploads_dir, {**bundle.meta, "case_id": bundle.case_id,
@@ -170,9 +183,10 @@ def create_app(settings: Settings | None = None, agent: ReviewAgent | None = Non
         else:
             pack, directory, _ = find_case(req.case_id)
             bundle = load_bundle(directory, req.case_id)
-            events = [e.model_dump(mode="json") for e in run_case(
-                bundle, pack.model(), report_fn=lambda ev: agent.start(ev, run_id),
-                encoder=None if bundle.cached else pack.encoder())]
+            with run_lock:
+                events = [e.model_dump(mode="json") for e in run_case(
+                    bundle, pack.model(), report_fn=lambda ev: agent.start(ev, run_id),
+                    encoder=None if bundle.cached else pack.encoder())]
         store.add_run(run_id, req.case_id, events)
         store.audit(run_id, "run", {"case_id": req.case_id, "replay": bool(replay and replay.exists())})
         return RunCreated(run_id=run_id, case_id=req.case_id)
@@ -225,7 +239,8 @@ def create_app(settings: Settings | None = None, agent: ReviewAgent | None = Non
         get_run_or_404(run_id)
         if not agent.waiting_for_human(run_id):
             raise HTTPException(409, "report is not waiting for a decision")
-        result = agent.decide(run_id, decision.action, decision.sections)
+        with run_lock:
+            result = agent.decide(run_id, decision.action, decision.sections)
         store.audit(run_id, decision.action, {"status": result["status"],
                                               "passed": result["verifier"]["passed"]})
         return result

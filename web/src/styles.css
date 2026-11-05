@@ -518,3 +518,20 @@ button:not(.ghost):not(.icon):hover { box-shadow: var(--glow); }
 .cmd pre { margin: 0; padding: 12px 14px; padding-right: 76px; border-radius: 10px; border: 1px solid var(--line); background: #02060c;
   overflow-x: auto; font: 12.5px/1.6 var(--mono); color: #c9f7ff; }
 .cmd button { position: absolute; top: 8px; right: 8px; font-size: 11px; padding: 2px 10px; }
+
+/* run progress + errors */
+.runprog { margin: 0 auto; width: min(900px, 100%); }
+.runprog__time { font: 700 26px var(--mono); color: var(--accent); text-shadow: 0 0 16px rgba(34, 211, 238, 0.7); }
+.console__line.is-next code { color: var(--muted); }
+.console__line.is-now code { color: var(--ink); }
+.runprog__bar { position: relative; height: 4px; border-radius: 4px; background: rgba(94, 164, 255, 0.12); overflow: hidden; margin-top: 8px; }
+.runprog__bar i { position: absolute; top: 0; bottom: 0; width: 35%; background: linear-gradient(90deg, transparent, #22d3ee, #a78bfa, transparent);
+  box-shadow: 0 0 10px #22d3ee; animation: sweep 1.6s ease-in-out infinite; }
+@keyframes sweep { from { left: -35%; } to { left: 100%; } }
+.errorcard { padding: 18px 22px; border-color: rgba(248, 113, 113, 0.5); display: grid; gap: 8px; justify-items: start; margin: 0 auto 12px; width: min(900px, 100%); }
+.modal .errorcard { padding: 10px 12px; border: 1px solid rgba(248, 113, 113, 0.5); border-radius: 10px; width: 100%; margin: 0; }
+.errorcard h3 { color: var(--bad); font-size: 16px; }
+.errorcard ul { margin: 0; padding-left: 18px; line-height: 1.6; }
+.errorcard code { font-family: var(--mono); overflow-wrap: anywhere; }
+.btn-spin { display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -2px; border-radius: 50%;
+  border: 2px solid rgba(3, 16, 24, 0.3); border-top-color: var(--accent-ink); animation: spin 0.8s linear infinite; }
